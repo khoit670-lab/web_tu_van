@@ -564,6 +564,202 @@
           padding: 14px;
         }
       }
+
+      /* ===== Trợ lý chat AI tư vấn ===== */
+      .ai-chat-toggle {
+        position: fixed;
+        right: 22px;
+        bottom: 22px;
+        z-index: 1200;
+        width: 58px;
+        height: 58px;
+        border: 0;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #e30613, #b0000b);
+        color: #fff;
+        font-size: 25px;
+        cursor: pointer;
+        box-shadow: 0 12px 30px rgba(180, 0, 10, 0.32);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .ai-chat-toggle:hover {
+        transform: translateY(-2px);
+      }
+      .ai-chat {
+        position: fixed;
+        right: 22px;
+        bottom: 92px;
+        z-index: 1199;
+        width: min(390px, calc(100vw - 24px));
+        height: min(640px, calc(100vh - 120px));
+        background: #fff;
+        border: 1px solid #ecd8da;
+        border-radius: 18px;
+        box-shadow: 0 20px 55px rgba(0, 0, 0, 0.2);
+        display: none;
+        overflow: hidden;
+        flex-direction: column;
+      }
+      .ai-chat.show {
+        display: flex;
+      }
+      .ai-chat-head {
+        background: linear-gradient(135deg, #d70716, #a8000b);
+        color: #fff;
+        padding: 14px 15px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .ai-chat-head .left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .ai-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #fff;
+        color: #d70716;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+      }
+      .ai-chat-head b {
+        display: block;
+        font-size: 14px;
+      }
+      .ai-chat-head small {
+        opacity: 0.85;
+        font-size: 11px;
+      }
+      .ai-chat-close {
+        border: 0;
+        background: rgba(255, 255, 255, 0.14);
+        color: #fff;
+        border-radius: 9px;
+        width: 32px;
+        height: 32px;
+        cursor: pointer;
+      }
+      .ai-chat-context {
+        padding: 8px 10px;
+        background: #fff7f7;
+        border-bottom: 1px solid #f1e1e3;
+        font-size: 11px;
+        color: #71585b;
+        line-height: 1.45;
+      }
+      .ai-chat-messages {
+        flex: 1;
+        overflow: auto;
+        padding: 12px;
+        background: #f7f7f8;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+      }
+      .ai-msg {
+        max-width: 88%;
+        padding: 10px 11px;
+        border-radius: 14px;
+        font-size: 13px;
+        line-height: 1.48;
+        white-space: pre-wrap;
+      }
+      .ai-msg.bot {
+        align-self: flex-start;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-bottom-left-radius: 5px;
+      }
+      .ai-msg.user {
+        align-self: flex-end;
+        background: #e30613;
+        color: #fff;
+        border-bottom-right-radius: 5px;
+      }
+      .ai-msg .muted {
+        font-size: 11px;
+        color: #7b7b7b;
+        margin-top: 6px;
+      }
+      .ai-chat-quick {
+        padding: 8px 10px;
+        border-top: 1px solid #ececec;
+        background: #fff;
+        display: flex;
+        gap: 6px;
+        overflow: auto;
+      }
+      .ai-quick {
+        flex: 0 0 auto;
+        border: 1px solid #edcbd0;
+        background: #fff6f7;
+        color: #9f0712;
+        padding: 7px 9px;
+        border-radius: 999px;
+        font-size: 11px;
+        cursor: pointer;
+      }
+      .ai-chat-input {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px;
+        padding: 10px;
+        background: #fff;
+        border-top: 1px solid #ececec;
+      }
+      .ai-chat-input textarea {
+        resize: none;
+        min-height: 42px;
+        max-height: 100px;
+        border: 1px solid #d7d7d7;
+        border-radius: 12px;
+        padding: 10px 11px;
+        font: inherit;
+        font-size: 13px;
+        outline: none;
+      }
+      .ai-chat-input textarea:focus {
+        border-color: #e30613;
+        box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.08);
+      }
+      .ai-send {
+        align-self: end;
+        border: 0;
+        background: #e30613;
+        color: #fff;
+        border-radius: 12px;
+        min-width: 48px;
+        height: 42px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .ai-chat-foot {
+        padding: 0 10px 9px;
+        background: #fff;
+        color: #8a8a8a;
+        font-size: 10px;
+        line-height: 1.35;
+      }
+      @media (max-width: 600px) {
+        .ai-chat {
+          right: 12px;
+          bottom: 82px;
+          width: calc(100vw - 24px);
+          height: calc(100vh - 105px);
+        }
+        .ai-chat-toggle {
+          right: 14px;
+          bottom: 14px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -888,6 +1084,80 @@
         </div>
       </section>
     </main>
+
+    <!-- ===== Trợ lý chat AI tư vấn Viettel ===== -->
+    <button
+      class="ai-chat-toggle"
+      id="aiChatToggle"
+      title="Mở trợ lý tư vấn AI"
+    >
+      💬
+    </button>
+
+    <section class="ai-chat" id="aiChatPanel" aria-label="Trợ lý tư vấn AI">
+      <div class="ai-chat-head">
+        <div class="left">
+          <div class="ai-avatar">AI</div>
+          <div>
+            <b>Trợ lý tư vấn Viettel</b>
+            <small>Đọc thông tin trên form và bảng gói hiện tại</small>
+          </div>
+        </div>
+        <button class="ai-chat-close" id="aiChatClose" aria-label="Đóng">
+          ✕
+        </button>
+      </div>
+
+      <div class="ai-chat-context" id="aiChatContext">
+        Có thể gõ tự nhiên, ví dụ: “Nhà 3 tầng, 80m²/sàn, 20 thiết bị, nội thành
+        Hà Nội, có 4 camera Wi‑Fi”.
+      </div>
+
+      <div class="ai-chat-messages" id="aiChatMessages"></div>
+
+      <div class="ai-chat-quick">
+        <button
+          class="ai-quick"
+          data-aiq="Tư vấn gói phù hợp theo thông tin tôi đã nhập"
+        >
+          Tư vấn gói
+        </button>
+        <button
+          class="ai-quick"
+          data-aiq="Tính phí hòa mạng cho gói phù hợp nhất"
+        >
+          Phí hòa mạng
+        </button>
+        <button
+          class="ai-quick"
+          data-aiq="Khách là văn phòng, tôi cần hỏi gì về IP tĩnh?"
+        >
+          IP tĩnh
+        </button>
+        <button
+          class="ai-quick"
+          data-aiq="Tư vấn camera cho khách theo thông tin trên form"
+        >
+          Camera
+        </button>
+        <button class="ai-quick" data-aiq="Tư vấn TV360 App và Box">
+          TV360
+        </button>
+      </div>
+
+      <div class="ai-chat-input">
+        <textarea
+          id="aiChatInput"
+          placeholder="Nhập câu hỏi hoặc mô tả khách hàng..."
+        ></textarea>
+        <button class="ai-send" id="aiChatSend">Gửi</button>
+      </div>
+      <div class="ai-chat-foot">
+        Trợ lý này dùng dữ liệu và thuật toán ngay trong trang, không gửi nội
+        dung ra ngoài. Các mức chưa có trong bảng sẽ được báo “cần kiểm tra”,
+        không tự bịa.
+      </div>
+    </section>
 
     <div class="modal" id="scriptModal">
       <div class="modal-box">
@@ -2834,6 +3104,492 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
       };
       updateIpNeedVisibility();
       recommend();
+
+      // ===== Trợ lý chat AI tư vấn =====
+      const aiChatPanel = document.getElementById("aiChatPanel");
+      const aiChatToggle = document.getElementById("aiChatToggle");
+      const aiChatClose = document.getElementById("aiChatClose");
+      const aiChatMessages = document.getElementById("aiChatMessages");
+      const aiChatInput = document.getElementById("aiChatInput");
+      const aiChatSend = document.getElementById("aiChatSend");
+      const aiChatContext = document.getElementById("aiChatContext");
+
+      function aiNorm(s = "") {
+        return String(s)
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/đ/g, "d")
+          .replace(/Đ/g, "D")
+          .replace(/[–—]/g, "-");
+      }
+      function aiAddMessage(role, text) {
+        const el = document.createElement("div");
+        el.className = "ai-msg " + role;
+        el.textContent = text;
+        aiChatMessages.appendChild(el);
+        aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+      }
+      function aiSetSelect(id, value) {
+        const el = document.getElementById(id);
+        if (!el) return false;
+        const ok = [...el.options].some((o) => o.value === value);
+        if (ok) {
+          el.value = value;
+          el.dispatchEvent(new Event("change", { bubbles: true }));
+          return true;
+        }
+        return false;
+      }
+      function aiSetValue(id, value) {
+        const el = document.getElementById(id);
+        if (!el) return false;
+        el.value = value;
+        el.dispatchEvent(new Event("input", { bubbles: true }));
+        el.dispatchEvent(new Event("change", { bubbles: true }));
+        return true;
+      }
+      function aiCurrentContext() {
+        const use = document.getElementById("useCase")?.value || "";
+        const house = document.getElementById("houseType")?.value || "";
+        const m2 = document.getElementById("areaM2")?.value || "";
+        const dev = document.getElementById("devices")?.value || "";
+        const area = document.getElementById("area")?.value || "T";
+        const wifi = document.getElementById("wifiCameraCount")?.value || 0;
+        const analog = document.getElementById("analogCameraCount")?.value || 0;
+        return `${use} | ${house}${m2 ? ` | ${m2} m²/sàn` : ""} | ${dev} thiết bị | ${area === "H" ? "Nội thành HN/HCM" : "Ngoại thành/tỉnh"} | Cam Wi‑Fi/IP: ${wifi}, Analog: ${analog}`;
+      }
+      function aiRefreshContext() {
+        if (aiChatContext)
+          aiChatContext.textContent =
+            "Đang dùng dữ liệu: " + aiCurrentContext();
+      }
+
+      function aiApplyNaturalText(raw) {
+        const t = aiNorm(raw);
+        let changed = [];
+
+        // Khu vực
+        if (
+          t.includes("noi thanh") &&
+          (t.includes("ha noi") ||
+            t.includes("hn") ||
+            t.includes("hcm") ||
+            t.includes("tp.hcm") ||
+            t.includes("sai gon"))
+        ) {
+          if (aiSetSelect("area", "H"))
+            changed.push("khu vực nội thành HN/HCM");
+        } else if (t.includes("ngoai thanh") || t.includes("tinh")) {
+          if (aiSetSelect("area", "T"))
+            changed.push("khu vực ngoại thành/tỉnh");
+        }
+
+        // Diện tích
+        const m2m = t.match(/(\d{2,4})\s*(?:m2|m²|met vuong)/);
+        if (m2m) {
+          aiSetValue("areaM2", m2m[1]);
+          changed.push(`${m2m[1]} m²/sàn`);
+        }
+
+        // Số tầng + kiểu nhà
+        const fm = t.match(/(\d{1,2})\s*tang/);
+        if (fm) {
+          let current = document.getElementById("houseType").value || "Nhà";
+          let label = `Nhà ${fm[1]} tầng`;
+          if (t.includes("quan cafe") || t.includes("cafe"))
+            label = `Quán cafe ${fm[1]} tầng`;
+          else if (t.includes("van phong")) label = `Văn phòng ${fm[1]} tầng`;
+          else if (t.includes("biet thu")) label = `Biệt thự ${fm[1]} tầng`;
+          aiSetValue("houseType", label);
+          changed.push(`${fm[1]} tầng`);
+        } else {
+          if (t.includes("can ho") || t.includes("chung cu")) {
+            aiSetValue("houseType", "Căn hộ 1 sàn / nhà nhỏ");
+            changed.push("căn hộ 1 sàn");
+          } else if (t.includes("nha ong")) {
+            aiSetValue("houseType", "Nhà ống hẹp, nhiều tầng");
+            changed.push("nhà ống");
+          } else if (t.includes("biet thu")) {
+            aiSetValue("houseType", "Nhà 3–4 tầng / biệt thự");
+            changed.push("biệt thự");
+          } else if (t.includes("san vuon")) {
+            aiSetValue("houseType", "Quán cafe sân vườn / không gian mở");
+            changed.push("không gian sân vườn");
+          }
+        }
+
+        // Nhu cầu sử dụng
+        if (
+          t.includes("quan cafe") ||
+          t.includes("cafe") ||
+          t.includes("tra sua")
+        ) {
+          aiSetValue(
+            "useCase",
+            t.includes("lon") || t.includes("dong khach")
+              ? "Quán cafe lớn / nhiều khách cùng truy cập"
+              : "Quán cafe nhỏ / trà sữa nhỏ",
+          );
+          changed.push("nhu cầu quán cafe");
+        } else if (
+          t.includes("van phong") ||
+          t.includes("cong ty") ||
+          t.includes("doanh nghiep")
+        ) {
+          aiSetValue(
+            "useCase",
+            t.includes("nhieu nhan vien") || t.includes("van phong vua")
+              ? "Văn phòng vừa / nhiều nhân viên"
+              : "Văn phòng nhỏ / startup",
+          );
+          changed.push("nhu cầu văn phòng/doanh nghiệp");
+        } else if (t.includes("gia dinh")) {
+          aiSetValue(
+            "useCase",
+            t.includes("dong nguoi")
+              ? "Gia đình đông người – nhiều TV/laptop/thiết bị"
+              : "Gia đình – sử dụng thông thường",
+          );
+          changed.push("nhu cầu gia đình");
+        } else if (t.includes("nha hang") || t.includes("quan an")) {
+          aiSetValue("useCase", "Nhà hàng / quán ăn");
+          changed.push("nhu cầu nhà hàng/quán ăn");
+        } else if (t.includes("khach san")) {
+          aiSetValue("useCase", "Khách sạn / nhiều phòng");
+          changed.push("nhu cầu khách sạn");
+        } else if (t.includes("homestay") || t.includes("nha nghi")) {
+          aiSetValue("useCase", "Homestay / nhà nghỉ");
+          changed.push("nhu cầu homestay/nhà nghỉ");
+        } else if (t.includes("livestream") || t.includes("ban hang online")) {
+          aiSetValue(
+            "useCase",
+            "Livestream / bán hàng online / sáng tạo nội dung",
+          );
+          changed.push("nhu cầu livestream");
+        } else if (
+          t.includes("gaming") ||
+          t.includes("phong may") ||
+          t.includes("esport")
+        ) {
+          aiSetValue("useCase", "Gaming / phòng máy / eSports");
+          changed.push("nhu cầu gaming");
+        }
+
+        // Số thiết bị
+        const dm = t.match(
+          /(\d{1,3})\s*(?:thiet bi|device|may dung mang|may ket noi)/,
+        );
+        if (dm) {
+          aiSetValue("devices", dm[1]);
+          changed.push(`${dm[1]} thiết bị khác`);
+        }
+
+        // Camera đang có
+        const wifiCam = t.match(
+          /(\d{1,3})\s*(?:camera|cam)\s*(?:wifi|wi-fi|ip)/,
+        );
+        const analogCam = t.match(
+          /(\d{1,3})\s*(?:camera|cam)\s*(?:analog|analogue)/,
+        );
+        if (wifiCam || analogCam) {
+          aiSetSelect("existingCamera", "yes");
+          document.getElementById("existingCameraDetail").style.display =
+            "block";
+          if (wifiCam) {
+            aiSetValue("wifiCameraCount", wifiCam[1]);
+            changed.push(`${wifiCam[1]} camera Wi‑Fi/IP`);
+          }
+          if (analogCam) {
+            aiSetValue("analogCameraCount", analogCam[1]);
+            changed.push(`${analogCam[1]} camera Analog`);
+          }
+        }
+
+        // IP tĩnh
+        if (t.includes("ip tinh") || t.includes("static ip")) {
+          updateIpNeedVisibility();
+          if (document.getElementById("ipNeedWrap").style.display !== "none") {
+            aiSetSelect(
+              "ipNeed",
+              t.includes("/30") || t.includes("block") ? "block" : "yes",
+            );
+            changed.push(t.includes("/30") ? "Block IP /30" : "IP tĩnh");
+          }
+        }
+
+        // TV360
+        if (t.includes("tv360") || t.includes("truyen hinh")) {
+          if (t.includes("box")) aiSetSelect("tvNeed", "box");
+          else if (t.includes("app")) aiSetSelect("tvNeed", "app");
+          else aiSetSelect("tvNeed", "compare");
+          changed.push("nhu cầu TV360");
+        }
+
+        // Muốn lắp Camera Viettel mới
+        if (
+          (t.includes("lap them") ||
+            t.includes("lap moi") ||
+            t.includes("camera viettel")) &&
+          t.includes("camera")
+        ) {
+          aiSetSelect(
+            "cameraNeed",
+            t.includes("ngoai troi") ? "outdoor" : "indoor",
+          );
+          const cm = t.match(
+            /(?:lap them|lap moi)?\s*(\d{1,2})\s*(?:camera|cam)/,
+          );
+          if (cm) aiSetValue("newCameraCount", cm[1]);
+          changed.push("nhu cầu lắp Camera Viettel");
+        }
+
+        updateIpNeedVisibility();
+        aiRefreshContext();
+        return changed;
+      }
+
+      function aiAllPackages() {
+        return [
+          ...(typeof basePackages !== "undefined" ? basePackages : []),
+          ...(typeof tvPackages !== "undefined" ? tvPackages : []),
+          ...(typeof cameraPackages !== "undefined" ? cameraPackages : []),
+          ...(typeof gigaPackages !== "undefined" ? gigaPackages : []),
+          ...(typeof businessPackages !== "undefined" ? businessPackages : []),
+        ];
+      }
+      function aiFindPackage(raw) {
+        const t = aiNorm(raw);
+        let best = null,
+          bestLen = 0;
+        for (const p of aiAllPackages()) {
+          const n = aiNorm(p.name);
+          if (t.includes(n) && n.length > bestLen) {
+            best = p;
+            bestLen = n.length;
+          }
+        }
+        return best;
+      }
+      function aiBestCards() {
+        recommend();
+        const cards = [...document.querySelectorAll("#results .card")];
+        return cards
+          .slice(0, 3)
+          .map((card) => ({
+            name: card.querySelector(".pkg")?.textContent?.trim() || "",
+            price:
+              card
+                .querySelector(".price")
+                ?.textContent?.replace(/\s+/g, " ")
+                .trim() || "",
+            reason:
+              card
+                .querySelector(".script")
+                ?.textContent?.replace(/^Giải thích ngắn:\s*/, "")
+                .trim() || "",
+          }))
+          .filter((x) => x.name);
+      }
+      function aiFindPkgObject(name) {
+        const target = aiNorm(name);
+        return (
+          aiAllPackages().find((p) => aiNorm(p.name) === target) ||
+          aiAllPackages().find(
+            (p) =>
+              target.includes(aiNorm(p.name)) ||
+              aiNorm(p.name).includes(target),
+          )
+        );
+      }
+      function aiExplainPackage(p) {
+        const fee =
+          p.setupFee != null ? money(p.setupFee) : "chưa có dữ liệu chắc chắn";
+        const cap = p.capacity
+          ? `${p.capacity[0]}–${p.capacity[1]} thiết bị`
+          : "tài liệu không nêu số chịu tải";
+        return `${p.name}: ${money(p.price)}/tháng, ${p.speed}, ${p.mesh || 0} Mesh, ${cap}. Phí hòa mạng: ${fee}.${p.ip ? ` IP tĩnh: ${p.ip}.` : ""}${p.equipment ? ` Thiết bị/dịch vụ: ${p.equipment}.` : ""}`;
+      }
+      function aiRecommendationAnswer() {
+        const rows = aiBestCards();
+        if (!rows.length)
+          return "Tôi chưa lấy được gói đề xuất. Bạn kiểm tra lại thông tin trên form rồi thử lại.";
+        const lines = rows
+          .map((x, i) => `${i + 1}. ${x.name} – ${x.price}\n   ${x.reason}`)
+          .join("\n\n");
+        return `Theo thông tin hiện tại, tôi ưu tiên:\n\n${lines}\n\nGói số 1 là phương án nên giải thích trước với khách. Nếu khách phân vân giá/phí hòa mạng, hãy dùng nút “Khách phân vân phí hòa mạng?” ngay dưới gói.`;
+      }
+      function aiFeeAnswer() {
+        const rows = aiBestCards();
+        if (!rows.length) return "Chưa có gói phù hợp để tính phí.";
+        const p = aiFindPkgObject(rows[0].name);
+        if (!p)
+          return `Gói ưu tiên hiện là ${rows[0].name}, nhưng tôi chưa đối chiếu được dữ liệu phí.`;
+        const customerType = document.getElementById("customerType").value;
+        const c = { upgrade: customerType === "upgrade" };
+        const x = paymentBreakdown(p, c);
+        if (!x.known)
+          return `Gói ${p.name}: ${money(p.price)}/tháng. ${x.source}`;
+        return `Gói ưu tiên: ${p.name}\n• Cước tháng: ${money(p.price)}\n• Phí hòa mạng: ${money(x.fee)} (thu 1 lần khi hòa mạng mới)\n• 6 tháng chưa phí: ${money(x.sixNoFee)}\n• 6 tháng có phí: ${money(x.sixWithFee)}\n• 12 tháng chưa phí: ${money(x.twelveNoFee)}\n• 12 tháng có phí: ${money(x.twelveWithFee)}\n\nCách nói với khách: “Em tách riêng cước và phí hòa mạng để anh/chị dễ cân đối, không gộp mập mờ vào giá.”`;
+      }
+      function aiIpAnswer() {
+        const use = document.getElementById("useCase").value;
+        const relevant = isOfficeOrBusinessUseCase(use);
+        if (!relevant)
+          return "IP tĩnh thường cần hỏi kỹ khi khách là văn phòng/công ty/doanh nghiệp. Nếu khách chỉ dùng gia đình thì thường không cần ưu tiên nhóm IP tĩnh.";
+        updateIpNeedVisibility();
+        const v = document.getElementById("ipNeed").value;
+        return `Với khách văn phòng/doanh nghiệp, nên hỏi: “Anh/chị có cần IP tĩnh để chạy server, VPN, camera/NVR truy cập từ xa, NAT port hoặc hệ thống nội bộ không?”\n\nTrạng thái hiện tại: ${ipNeedText(v)}.\n• Không cần IP tĩnh → ưu tiên PRO/MESHPRO hoặc gói Internet phù hợp.\n• Cần IP tĩnh → ưu tiên VIP/F.\n• Cần nhiều IP → ưu tiên gói có Block IP /30.`;
+      }
+      function aiCameraAnswer() {
+        const wifi = Number(
+          document.getElementById("wifiCameraCount").value || 0,
+        );
+        const analog = Number(
+          document.getElementById("analogCameraCount").value || 0,
+        );
+        const install = document.getElementById("cameraNeed").value;
+        let s = `Camera khách đang có: ${wifi} Wi‑Fi/IP, ${analog} Analog.\n`;
+        if (wifi)
+          s += `• ${wifi} camera Wi‑Fi/IP được tính trực tiếp vào tải mạng.\n`;
+        if (analog)
+          s += `• Camera Analog thường đi qua đầu ghi; công cụ quy đổi khoảng 1 kết nối mạng cho đầu ghi thay vì cộng từng mắt camera.\n`;
+        if (install !== "none")
+          s += `• Khách còn muốn lắp Camera Viettel: ${document.getElementById("newCameraCount").value || 1} camera ${install === "outdoor" ? "ngoài trời" : "trong nhà"}.\n`;
+        s += `\nNếu chọn combo Camera theo ảnh mới: NETCB4/MESHCB4 có phí hòa mạng 300.000đ; NETVT01/NETVT2/MESHVT1/2/3 + Camera có phí hòa mạng 500.000đ.`;
+        return s;
+      }
+      function aiTvAnswer() {
+        const tv = document.getElementById("tvNeed").value;
+        const mode = document.getElementById("tvMode").value;
+        return `TV360 hiện tại: ${tv === "none" ? "chưa chọn" : tv === "app" ? "App TV360" : tv === "box" ? "TV360 Box" : "đang so sánh App và Box"}.\n\nCách tư vấn:\n• App: phù hợp Smart TV, gọn, không cần đầu thu riêng.\n• Box: phù hợp khách muốn đầu thu/điều khiển riêng hoặc TV không thuận tiện cài App.\n• Chế độ trên form: ${mode === "separate" ? "chọn mạng trước rồi tư vấn TV riêng" : "dùng combo Internet + TV360 có sẵn"}.\n\nMức cộng App/Box trong trang hiện là mức tham chiếu suy ra từ bảng combo, cần kiểm tra chính sách thực tế trước khi chốt.`;
+      }
+      function aiAnswer(raw) {
+        const text = raw.trim();
+        const t = aiNorm(text);
+        const changed = aiApplyNaturalText(text);
+
+        const pkg = aiFindPackage(text);
+        if (pkg) {
+          return `${aiExplainPackage(pkg)}${changed.length ? `\n\nTôi cũng đã cập nhật form: ${changed.join(", ")}.` : ""}`;
+        }
+        if (
+          t.includes("phi hoa mang") ||
+          t.includes("phi hm") ||
+          t.includes("hoa mang bao nhieu")
+        ) {
+          return (
+            aiFeeAnswer() +
+            (changed.length
+              ? `\n\nĐã cập nhật form: ${changed.join(", ")}.`
+              : "")
+          );
+        }
+        if (
+          t.includes("ip tinh") ||
+          t.includes("static ip") ||
+          t.includes("block ip")
+        ) {
+          return (
+            aiIpAnswer() +
+            (changed.length
+              ? `\n\nĐã cập nhật form: ${changed.join(", ")}.`
+              : "")
+          );
+        }
+        if (
+          t.includes("camera") ||
+          t.includes("cam wifi") ||
+          t.includes("cam analog")
+        ) {
+          if (
+            t.includes("goi nao") ||
+            t.includes("tu van") ||
+            t.includes("phu hop")
+          ) {
+            return (
+              (changed.length
+                ? `Tôi đã cập nhật: ${changed.join(", ")}.\n\n`
+                : "") +
+              aiRecommendationAnswer() +
+              `\n\n${aiCameraAnswer()}`
+            );
+          }
+          return (
+            aiCameraAnswer() +
+            (changed.length
+              ? `\n\nĐã cập nhật form: ${changed.join(", ")}.`
+              : "")
+          );
+        }
+        if (t.includes("tv360") || t.includes("truyen hinh")) {
+          return (
+            aiTvAnswer() +
+            (changed.length
+              ? `\n\nĐã cập nhật form: ${changed.join(", ")}.`
+              : "")
+          );
+        }
+        if (
+          t.includes("tu van") ||
+          t.includes("goi nao") ||
+          t.includes("nen chon") ||
+          t.includes("phu hop") ||
+          t.includes("de xuat") ||
+          changed.length
+        ) {
+          return (
+            (changed.length
+              ? `Tôi đã hiểu và cập nhật form: ${changed.join(", ")}.\n\n`
+              : "") + aiRecommendationAnswer()
+          );
+        }
+
+        return `Tôi có thể giúp bạn ngay trong trang này. Bạn có thể gõ tự nhiên như:\n• “Nhà 3 tầng 70m²/sàn, 18 thiết bị, nội thành Hà Nội”\n• “Quán cafe 2 tầng, 35 thiết bị, 6 camera Wi‑Fi”\n• “Văn phòng 25 máy, cần IP tĩnh”\n• “Tính phí hòa mạng gói phù hợp nhất”\n• “So sánh TV360 App và Box”\n\nTôi sẽ cập nhật form và chạy lại tư vấn tự động.`;
+      }
+      function aiSendMessage(prefill) {
+        const text = (prefill ?? aiChatInput.value).trim();
+        if (!text) return;
+        aiAddMessage("user", text);
+        aiChatInput.value = "";
+        setTimeout(() => {
+          try {
+            aiAddMessage("bot", aiAnswer(text));
+          } catch (err) {
+            aiAddMessage(
+              "bot",
+              "Tôi gặp lỗi khi đọc dữ liệu trên trang. Bạn thử bấm “Tư vấn gói” trên form trước rồi hỏi lại nhé.",
+            );
+            console.error(err);
+          }
+        }, 180);
+      }
+      aiChatToggle.onclick = () => {
+        aiChatPanel.classList.toggle("show");
+        aiRefreshContext();
+        if (aiChatPanel.classList.contains("show")) aiChatInput.focus();
+      };
+      aiChatClose.onclick = () => aiChatPanel.classList.remove("show");
+      aiChatSend.onclick = () => aiSendMessage();
+      aiChatInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          aiSendMessage();
+        }
+      });
+      document
+        .querySelectorAll("[data-aiq]")
+        .forEach((btn) =>
+          btn.addEventListener("click", () => aiSendMessage(btn.dataset.aiq)),
+        );
+
+      aiAddMessage(
+        "bot",
+        `Chào bạn 👋 Tôi là trợ lý tư vấn Viettel trên trang này.
+
+Bạn có thể mô tả khách hàng bằng câu tự nhiên. Tôi sẽ tự cập nhật các ô trên form, chạy bộ lọc gói và giải thích lại cho bạn.`,
+      );
+      aiRefreshContext();
     </script>
   </body>
 </html>
