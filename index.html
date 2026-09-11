@@ -1,0 +1,2839 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tư vấn gói cước Viettel</title>
+    <style>
+      :root {
+        --viettel: #e60012;
+        --viettel-dark: #b9000e;
+        --bg: #f5f6f8;
+        --text: #242833;
+        --muted: #667085;
+        --line: #e5e7eb;
+        --card: #ffffff;
+        --soft: #fff1f2;
+        --good: #067647;
+        --warn: #b54708;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          Inter,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+      }
+      .container {
+        width: min(1200px, calc(100% - 28px));
+        margin: 0 auto;
+      }
+      .hero {
+        background: linear-gradient(135deg, #fff 0%, #fff6f7 55%, #ffe4e8 100%);
+        border-bottom: 1px solid #f3c7cc;
+        padding: 26px 0;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+      .logo {
+        font-size: 38px;
+        font-weight: 900;
+        letter-spacing: -2px;
+        color: var(--viettel);
+      }
+      .badge {
+        background: var(--viettel);
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 13px;
+      }
+      .hero h1 {
+        margin: 12px 0 6px;
+        font-size: clamp(26px, 4vw, 44px);
+        line-height: 1.15;
+      }
+      .hero p {
+        margin: 0;
+        color: var(--muted);
+        max-width: 900px;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 360px 1fr;
+        gap: 22px;
+        padding: 24px 0 36px;
+      }
+      .panel,
+      .result-panel {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        box-shadow: 0 10px 30px rgba(16, 24, 40, 0.06);
+      }
+      .panel {
+        padding: 18px;
+        position: sticky;
+        top: 16px;
+        height: max-content;
+      }
+      .panel h2,
+      .result-panel h2 {
+        margin: 0 0 14px;
+        font-size: 20px;
+      }
+      .field {
+        margin: 0 0 15px;
+      }
+      .field label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 7px;
+        font-size: 14px;
+      }
+      select,
+      input {
+        width: 100%;
+        padding: 12px 13px;
+        border: 1px solid #d0d5dd;
+        border-radius: 12px;
+        background: #fff;
+        font-size: 15px;
+        color: var(--text);
+        outline: none;
+      }
+      select:focus,
+      input:focus {
+        border-color: var(--viettel);
+        box-shadow: 0 0 0 3px rgba(230, 0, 18, 0.08);
+      }
+      .inline {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .checks {
+        display: grid;
+        gap: 8px;
+      }
+      .check {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 11px;
+        background: #fff;
+        cursor: pointer;
+      }
+      .check input {
+        width: auto;
+      }
+      .hint {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 5px;
+      }
+      .btn {
+        border: 0;
+        background: var(--viettel);
+        color: #fff;
+        font-weight: 800;
+        padding: 13px 16px;
+        border-radius: 12px;
+        width: 100%;
+        cursor: pointer;
+        font-size: 15px;
+        transition: 0.2s;
+      }
+      .btn:hover {
+        background: var(--viettel-dark);
+        transform: translateY(-1px);
+      }
+      .btn.secondary {
+        background: #fff;
+        color: var(--viettel);
+        border: 1px solid #f4a6ae;
+        margin-top: 9px;
+      }
+      .result-panel {
+        padding: 20px;
+      }
+      .summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+      .summary .item {
+        background: #fafafa;
+        border: 1px solid var(--line);
+        padding: 12px;
+        border-radius: 14px;
+      }
+      .summary .k {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .summary .v {
+        font-weight: 800;
+        margin-top: 3px;
+      }
+      .notice {
+        padding: 12px 14px;
+        border-radius: 12px;
+        background: #fff8e8;
+        border: 1px solid #f7d79b;
+        color: #7a4e00;
+        margin-bottom: 16px;
+        font-size: 14px;
+      }
+      .ai-box {
+        padding: 14px;
+        border-radius: 14px;
+        background: #f8fafc;
+        border: 1px solid #d0d5dd;
+        margin-bottom: 16px;
+      }
+      .ai-box b {
+        color: #111827;
+      }
+      .ai-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .ai-chip {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 9px 10px;
+        font-size: 13px;
+      }
+      .warn-chip {
+        background: #fff4ed;
+        border-color: #ffd6ae;
+        color: #9a3412;
+      }
+      .section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin: 18px 0 10px;
+      }
+      .section-title h3 {
+        margin: 0;
+        font-size: 18px;
+      }
+      .count {
+        font-size: 12px;
+        color: var(--muted);
+        background: #f2f4f7;
+        border-radius: 999px;
+        padding: 4px 8px;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+        background: #fff;
+        position: relative;
+        overflow: hidden;
+      }
+      .card.best {
+        border: 2px solid var(--viettel);
+        box-shadow: 0 8px 20px rgba(230, 0, 18, 0.08);
+      }
+      .card.best:before {
+        content: "PHÙ HỢP NHẤT";
+        position: absolute;
+        right: 0;
+        top: 0;
+        background: var(--viettel);
+        color: #fff;
+        font-weight: 800;
+        font-size: 11px;
+        padding: 6px 9px;
+        border-bottom-left-radius: 10px;
+      }
+      .pkg {
+        font-size: 20px;
+        font-weight: 900;
+        color: #111827;
+        margin-right: 95px;
+      }
+      .price {
+        font-size: 27px;
+        font-weight: 900;
+        color: var(--viettel);
+        margin: 5px 0;
+      }
+      .price small {
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 600;
+      }
+      .meta {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .tag {
+        font-size: 12px;
+        padding: 4px 8px;
+        background: #f2f4f7;
+        border-radius: 999px;
+        color: #475467;
+      }
+      .tag.red {
+        background: var(--soft);
+        color: var(--viettel);
+      }
+      .card ul {
+        padding-left: 18px;
+        margin: 10px 0;
+        color: #475467;
+        font-size: 14px;
+      }
+      .script {
+        background: #f9fafb;
+        border: 1px dashed #d0d5dd;
+        border-radius: 12px;
+        padding: 12px;
+        margin-top: 10px;
+        font-size: 14px;
+      }
+      .script b {
+        color: #111827;
+      }
+      .row-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      .tv-addon-wrap {
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+      }
+      .tv-addon-note {
+        background: #eef7ff;
+        border: 1px solid #b8daf7;
+        color: #164e78;
+        padding: 12px 14px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        font-size: 14px;
+      }
+      .tv-addon-card {
+        border: 1px solid #b8daf7;
+        background: #fbfdff;
+      }
+      .tv-addon-card .price {
+        color: #0b63a5;
+      }
+      .total-line {
+        margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        font-weight: 800;
+        color: #0c4a6e;
+      }
+      .mini {
+        border: 1px solid #d0d5dd;
+        background: #fff;
+        border-radius: 10px;
+        padding: 8px 10px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .mini.primary {
+        background: var(--viettel);
+        color: #fff;
+        border-color: var(--viettel);
+      }
+      .empty {
+        text-align: center;
+        padding: 36px 16px;
+        color: var(--muted);
+        border: 1px dashed #d0d5dd;
+        border-radius: 16px;
+      }
+      .compare {
+        margin-top: 18px;
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 880px;
+        background: #fff;
+      }
+      th {
+        background: #c90f1d;
+        color: #fff;
+        text-align: left;
+        padding: 10px;
+        font-size: 13px;
+      }
+      td {
+        padding: 10px;
+        border-top: 1px solid var(--line);
+        font-size: 13px;
+        vertical-align: top;
+      }
+      .footer-note {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 18px;
+      }
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        z-index: 99;
+      }
+      .modal.show {
+        display: flex;
+      }
+      .modal-box {
+        width: min(680px, 100%);
+        background: #fff;
+        border-radius: 18px;
+        padding: 20px;
+        max-height: 85vh;
+        overflow: auto;
+      }
+      .modal-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+      .x {
+        border: 0;
+        background: #f2f4f7;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        font-size: 18px;
+        cursor: pointer;
+      }
+      .copybox {
+        background: #f9fafb;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+        white-space: pre-wrap;
+        font-size: 14px;
+        margin-top: 12px;
+      }
+
+      .fee-box {
+        margin-top: 12px;
+        background: #fff7f7;
+        border: 1px solid #ffd2d8;
+        border-radius: 14px;
+        padding: 12px;
+      }
+      .fee-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 9px;
+      }
+      .fee-head b {
+        color: #a8071a;
+      }
+      .fee-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+      .fee-cell {
+        background: #fff;
+        border: 1px solid #f0d8db;
+        border-radius: 10px;
+        padding: 9px;
+      }
+      .fee-cell .fee-label {
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 3px;
+      }
+      .fee-cell .fee-value {
+        font-size: 14px;
+        font-weight: 800;
+        color: #1f2937;
+      }
+      .fee-source {
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 7px;
+        line-height: 1.45;
+      }
+      .mini.fee-help {
+        background: #fff3cd;
+        color: #7a4b00;
+        border: 1px solid #f1cc72;
+      }
+      .ip-box {
+        background: #f6f8ff;
+        border: 1px solid #dce4ff;
+        border-radius: 12px;
+        padding: 10px;
+        margin-top: 6px;
+      }
+      .ip-alert {
+        background: #fff8e8;
+        border: 1px solid #f2d28b;
+        color: #6b4b00;
+      }
+      @media (max-width: 640px) {
+        .fee-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 980px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        .panel {
+          position: static;
+        }
+        .summary {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 640px) {
+        .cards {
+          grid-template-columns: 1fr;
+        }
+        .summary {
+          grid-template-columns: 1fr;
+        }
+        .inline {
+          grid-template-columns: 1fr;
+        }
+        .container {
+          width: min(100% - 18px, 1200px);
+        }
+        .hero {
+          padding: 20px 0;
+        }
+        .logo {
+          font-size: 32px;
+        }
+        .result-panel,
+        .panel {
+          padding: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="container">
+        <div class="brand">
+          <div class="logo">viettel</div>
+          <span class="badge">Công cụ tư vấn gói cước</span>
+        </div>
+        <h1>Chọn đúng gói Internet theo nhà, thiết bị và nhu cầu khách hàng</h1>
+        <p>
+          Nhập mục đích sử dụng (gia đình, quán cafe, văn phòng…), kiểu
+          nhà/không gian (có thể tự gõ), diện tích m², số thiết bị và nhu cầu
+          khách hàng. Hệ thống sẽ ước tính vùng phủ Wi‑Fi, hỏi thêm IP tĩnh khi
+          là văn phòng/doanh nghiệp, tính rõ phí hòa mạng và tạo sẵn lời tư vấn
+          để bạn nói với khách.
+        </p>
+      </div>
+    </header>
+
+    <main class="container layout">
+      <aside class="panel">
+        <h2>Thông tin khách hàng</h2>
+
+        <div class="field">
+          <label>Khách hàng</label>
+          <select id="customerType">
+            <option value="new">Khách mới lắp mạng</option>
+            <option value="upgrade">Đang dùng mạng cũ, muốn nâng cấp</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Nhu cầu sử dụng chính</label>
+          <input
+            id="useCase"
+            list="useCaseList"
+            value="Gia đình – sử dụng thông thường"
+            placeholder="Chọn trong danh sách hoặc tự nhập, ví dụ: quán cafe có livestream..."
+            autocomplete="off"
+          />
+          <datalist id="useCaseList">
+            <option value="Gia đình – sử dụng thông thường"></option>
+            <option
+              value="Gia đình đông người – nhiều TV/laptop/thiết bị"
+            ></option>
+            <option value="Quán cafe nhỏ / trà sữa nhỏ"></option>
+            <option value="Quán cafe lớn / nhiều khách cùng truy cập"></option>
+            <option value="Văn phòng nhỏ / startup"></option>
+            <option value="Văn phòng vừa / nhiều nhân viên"></option>
+            <option value="Cửa hàng / showroom / shop bán hàng"></option>
+            <option value="Nhà hàng / quán ăn"></option>
+            <option value="Homestay / nhà nghỉ"></option>
+            <option value="Khách sạn / nhiều phòng"></option>
+            <option value="Spa / salon / phòng khám"></option>
+            <option value="Trung tâm học / lớp học / đào tạo"></option>
+            <option value="Kho / xưởng / văn phòng công trình"></option>
+            <option
+              value="Livestream / bán hàng online / sáng tạo nội dung"
+            ></option>
+            <option value="Gaming / phòng máy / eSports"></option>
+            <option value="Nhiều camera / giám sát là nhu cầu chính"></option>
+            <option value="Doanh nghiệp cần IP tĩnh / server / VPN"></option>
+            <option value="Khác / tư vấn theo thông số nhập bên dưới"></option>
+          </datalist>
+          <div class="hint">
+            <b>Có thể vừa chọn vừa nhập:</b> bấm vào ô để chọn gợi ý có sẵn,
+            hoặc gõ nhu cầu thực tế của khách. Ví dụ: “quán cafe 2 tầng có
+            livestream và 8 camera”. Hệ thống sẽ nhận diện nhóm gần nhất để tính
+            gói.
+          </div>
+        </div>
+
+        <div class="field" id="ipNeedWrap" style="display: none">
+          <label>Văn phòng / doanh nghiệp có cần IP tĩnh không?</label>
+          <select id="ipNeed">
+            <option value="no">Không cần IP tĩnh</option>
+            <option value="yes">Có – cần IP tĩnh</option>
+            <option value="block">Có – cần Block IP /30 hoặc nhiều IP</option>
+            <option value="unknown">Chưa rõ – cần hỏi lại khách</option>
+          </select>
+          <div class="hint">
+            Ô này tự hiện khi hệ thống nhận diện nhu cầu kiểu văn phòng/công
+            ty/doanh nghiệp. Nếu khách cần IP tĩnh, hệ thống sẽ ưu tiên VIP/F;
+            nếu không cần sẽ ưu tiên PRO/MESHPRO hoặc gói Internet phù hợp.
+          </div>
+        </div>
+
+        <div class="field" id="oldFeeWrap" style="display: none">
+          <label>Mức cước cũ đang dùng</label>
+          <select id="oldFee">
+            <option value="138000">≤ 138.000đ/tháng</option>
+            <option value="153000">≤ 153.000đ/tháng</option>
+            <option value="165000">≤ 165.000đ/tháng</option>
+            <option value="173000">≤ 173.000đ/tháng</option>
+            <option value="180000">≤ 180.000đ/tháng</option>
+            <option value="190000">≤ 190.000đ/tháng</option>
+            <option value="200000">≤ 200.000đ/tháng</option>
+            <option value="210000">≤ 210.000đ/tháng</option>
+            <option value="230000">≤ 230.000đ/tháng</option>
+            <option value="250000">≤ 250.000đ/tháng</option>
+            <option value="280000">≤ 280.000đ/tháng</option>
+            <option value="all">Không rõ / mức khác</option>
+          </select>
+          <div class="hint">
+            Dùng để chọn đúng nhóm MeshEco / MeshPlus / MeshVip trong bảng nâng
+            cấp.
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Kiểu nhà / không gian</label>
+          <input
+            id="houseType"
+            list="houseTypeList"
+            value="Căn hộ 1 sàn / nhà nhỏ"
+            placeholder="Chọn hoặc tự nhập, ví dụ: nhà ống 4 tầng, quán cafe sân vườn..."
+            autocomplete="off"
+          />
+          <datalist id="houseTypeList">
+            <option value="Căn hộ 1 sàn / nhà nhỏ"></option>
+            <option value="Chung cư 1 sàn"></option>
+            <option value="Nhà cấp 4 / 1 tầng"></option>
+            <option value="Nhà 1–2 tầng"></option>
+            <option value="Nhà 2–3 tầng / nhà ống dài"></option>
+            <option value="Nhà 3–4 tầng / biệt thự"></option>
+            <option value="Nhà ống hẹp, nhiều tầng"></option>
+            <option value="Nhà rất rộng / nhiều phòng"></option>
+            <option value="Biệt thự sân vườn"></option>
+            <option value="Mặt bằng kinh doanh 1 sàn"></option>
+            <option value="Quán cafe sân vườn / không gian mở"></option>
+            <option value="Văn phòng nhiều phòng"></option>
+            <option value="Nhà xưởng / kho rộng"></option>
+          </datalist>
+          <div class="hint">
+            <b>Có thể vừa chọn vừa nhập:</b> ví dụ “nhà ống 4 tầng”, “chung cư
+            85 m²”, “quán cafe sân vườn 1 tầng”, “biệt thự 3 tầng nhiều phòng”.
+            Hệ thống sẽ nhận diện nhóm không gian gần nhất và nếu bạn ghi rõ số
+            tầng thì sẽ dùng số tầng đó để ước tính vùng phủ.
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Diện tích khoảng (m² / sàn)</label>
+          <input
+            id="areaM2"
+            type="number"
+            min="15"
+            max="1000"
+            step="1"
+            value="60"
+          />
+          <div class="hint">
+            Nhập diện tích một sàn. Với căn hộ 1 sàn, nhập toàn bộ diện tích căn
+            hộ. Hệ thống dùng số này cùng số tầng để ước tính số vùng phủ/Mesh
+            cần thiết.
+          </div>
+        </div>
+
+        <div class="field">
+          <label
+            >Số thiết bị kết nối khác
+            <span style="font-weight: 500; color: var(--muted)"
+              >(không tính camera)</span
+            ></label
+          >
+          <input id="devices" type="number" min="1" max="200" value="12" />
+          <div class="hint">
+            Điện thoại + TV + laptop + máy tính + máy POS + thiết bị thông minh.
+            Camera nhập riêng ngay bên dưới để hệ thống tính đúng hơn.
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Khách đang sử dụng camera giám sát?</label>
+          <select id="existingCamera">
+            <option value="no">Không dùng camera</option>
+            <option value="yes">Có dùng camera</option>
+          </select>
+        </div>
+
+        <div id="existingCameraDetail" style="display: none">
+          <div class="inline">
+            <div class="field">
+              <label>Số Camera Wi‑Fi / IP</label>
+              <input
+                id="wifiCameraCount"
+                type="number"
+                min="0"
+                max="200"
+                value="0"
+              />
+              <div class="hint">
+                Mỗi camera Wi‑Fi/IP được tính là một thiết bị mạng vì kết nối
+                trực tiếp vào Wi‑Fi/LAN.
+              </div>
+            </div>
+            <div class="field">
+              <label>Số Camera Analog</label>
+              <input
+                id="analogCameraCount"
+                type="number"
+                min="0"
+                max="200"
+                value="0"
+              />
+              <div class="hint">
+                Camera analog thường đi về đầu ghi DVR; hệ thống chỉ quy đổi
+                khoảng 1 kết nối mạng cho đầu ghi, không cộng từng mắt cam vào
+                số thiết bị Wi‑Fi.
+              </div>
+            </div>
+          </div>
+          <div class="notice" style="margin-top: -4px">
+            <b>Cách tính hỗ trợ tư vấn:</b> Camera Wi‑Fi/IP được cộng trực tiếp
+            vào tải thiết bị mạng. Camera Analog không chiếm từng kết nối Wi‑Fi;
+            nếu có đầu ghi kết nối Internet, công cụ cộng 1 thiết bị mạng đại
+            diện cho đầu ghi. Đây là quy tắc ước tính kỹ thuật, không phải giới
+            hạn chính thức của Viettel.
+          </div>
+        </div>
+
+        <div class="field" id="areaWrap">
+          <label>Khu vực</label>
+          <select id="area">
+            <option value="T">Ngoại thành HN/HCM hoặc 32 tỉnh khác</option>
+            <option value="H">Nội thành Hà Nội / TP.HCM</option>
+          </select>
+        </div>
+
+        <div class="field" id="extraWrap">
+          <label>Nhu cầu truyền hình TV360</label>
+          <select id="tvNeed">
+            <option value="none">Không cần</option>
+            <option value="app">Có – dùng App TV360 trên Smart TV</option>
+            <option value="box">Có – dùng TV360 Box</option>
+            <option value="compare">
+              Khách chưa chốt – so sánh cả App và Box
+            </option>
+          </select>
+          <div class="hint">
+            Có thể chọn gói Internet trước, sau đó tư vấn TV360 thành một phần
+            riêng để khách dễ hiểu.
+          </div>
+        </div>
+
+        <div class="field" id="tvModeWrap" style="display: none">
+          <label>Cách tư vấn TV360</label>
+          <select id="tvMode">
+            <option value="separate">
+              Chọn gói mạng trước → thêm TV360 riêng
+            </option>
+            <option value="combo">Dùng combo Internet + TV360 có sẵn</option>
+          </select>
+          <div class="hint">
+            Chế độ “TV360 riêng” sẽ giữ nguyên gói mạng đề xuất, rồi hiển thị
+            phần TV bên dưới. Mức cộng 20.000đ (App) / 40.000đ (Box) được suy ra
+            từ chênh lệch các combo trong tài liệu bạn cung cấp.
+          </div>
+        </div>
+
+        <div class="field" id="cameraWrap">
+          <label>Có muốn lắp thêm Camera Viettel?</label>
+          <select id="cameraNeed">
+            <option value="none">Không lắp thêm</option>
+            <option value="indoor">Có – camera trong nhà</option>
+            <option value="outdoor">Có – camera ngoài trời</option>
+          </select>
+          <div class="hint">
+            Mục này là nhu cầu lắp mới Camera Viettel, khác với số camera khách
+            đang sử dụng ở phần Thiết bị phía trên.
+          </div>
+        </div>
+
+        <div class="field" id="newCameraCountWrap" style="display: none">
+          <label>Số Camera Viettel muốn lắp thêm</label>
+          <input id="newCameraCount" type="number" min="1" max="50" value="1" />
+          <div class="hint">
+            Các mã CAM1 trong tài liệu là cấu hình có 1 camera. Nếu khách cần
+            nhiều hơn 1 camera, cần tính thêm thiết bị/Cloud theo chính sách
+            thực tế.
+          </div>
+        </div>
+
+        <div class="field" id="cloudWrap" style="display: none">
+          <label>Thời gian xem lại Camera</label>
+          <select id="cloudDays">
+            <option value="1">1 ngày – 20.000đ/camera/tháng</option>
+            <option value="7">7 ngày – 40.000đ/camera/tháng</option>
+            <option value="15">15 ngày – 60.000đ/camera/tháng</option>
+            <option value="30">30 ngày – 90.000đ/camera/tháng</option>
+          </select>
+        </div>
+
+        <button class="btn" id="recommendBtn">
+          Phân tích & tìm gói phù hợp
+        </button>
+        <button class="btn secondary" id="resetBtn">Nhập lại</button>
+      </aside>
+
+      <section class="result-panel">
+        <h2>Kết quả phân tích & tư vấn</h2>
+        <div id="summary" class="summary"></div>
+        <div id="notice"></div>
+        <div id="results"></div>
+        <div id="tvAddonResults"></div>
+        <div class="footer-note">
+          Lưu ý: số thiết bị chịu tải chỉ dùng khi tài liệu gốc có nêu. Phí hòa
+          mạng được tách riêng thành “chưa phí” và “có phí”; gói Camera dùng mức
+          300.000đ/500.000đ theo ảnh bảng combo Camera bạn cung cấp, các gói
+          khác dùng mức 300.000đ theo phần phí hòa mạng chung trong tài liệu và
+          cần kiểm tra lại chính sách thực tế trước khi chốt. Camera Wi‑Fi/IP
+          được công cụ quy đổi là 1 thiết bị mạng/camera; camera Analog được quy
+          đổi khoảng 1 thiết bị mạng cho đầu ghi nếu đầu ghi có kết nối
+          Internet. Đây là ước tính hỗ trợ tư vấn, không phải giới hạn chính
+          thức của Viettel. Phần phân loại nhu cầu sử dụng, diện tích m² và số
+          vùng phủ/Mesh cũng là ước tính nội bộ. Mesh dùng để mở rộng vùng phủ
+          Wi‑Fi, không đồng nghĩa tự tăng tốc độ đường truyền Internet. Với chế
+          độ TV360 tách riêng, mức +20.000đ App / +40.000đ Box là mức tham chiếu
+          suy ra từ chênh lệch combo trong tài liệu, cần kiểm tra chính sách
+          thực tế trước khi chốt khách.
+        </div>
+      </section>
+    </main>
+
+    <div class="modal" id="scriptModal">
+      <div class="modal-box">
+        <div class="modal-head">
+          <h3 id="modalTitle">Lời tư vấn</h3>
+          <button class="x" id="closeModal">×</button>
+        </div>
+        <div class="copybox" id="modalText"></div>
+        <button class="btn" id="copyScript" style="margin-top: 12px">
+          Sao chép lời tư vấn
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const money = (n) =>
+        n == null ? "—" : new Intl.NumberFormat("vi-VN").format(n) + "đ";
+
+      const useCaseProfiles = {
+        family: {
+          label: "Gia đình – sử dụng thông thường",
+          minSpeed: 300,
+          preferMesh: 0,
+          segment: "home",
+          upgradeTier: "eco",
+          note: "Ưu tiên chi phí hợp lý và vùng phủ đúng diện tích nhà.",
+        },
+        family_heavy: {
+          label: "Gia đình đông người – nhiều thiết bị",
+          minSpeed: 500,
+          preferMesh: 1,
+          segment: "home",
+          upgradeTier: "plus",
+          note: "Ưu tiên 500 Mbps trở lên và Mesh nếu nhà rộng/nhiều tầng.",
+        },
+        cafe_small: {
+          label: "Quán cafe nhỏ / trà sữa nhỏ",
+          minSpeed: 300,
+          preferMesh: 1,
+          segment: "business",
+          upgradeTier: "plus",
+          note: "Ưu tiên vùng phủ ổn định cho khách ngồi nhiều vị trí; nên có Mesh.",
+        },
+        cafe_large: {
+          label: "Quán cafe lớn / nhiều khách",
+          minSpeed: 500,
+          preferMesh: 2,
+          segment: "business",
+          upgradeTier: "vip",
+          note: "Ưu tiên 500 Mbps trở lên, nhiều điểm phủ và phương án doanh nghiệp nếu lượng khách lớn.",
+        },
+        office_small: {
+          label: "Văn phòng nhỏ / startup",
+          minSpeed: 400,
+          preferMesh: 1,
+          segment: "business",
+          upgradeTier: "plus",
+          note: "Ưu tiên ổn định cho họp online, cloud và nhiều máy làm việc cùng lúc.",
+        },
+        office_medium: {
+          label: "Văn phòng vừa / nhiều nhân viên",
+          minSpeed: 500,
+          preferMesh: 2,
+          segment: "business",
+          upgradeTier: "vip",
+          note: "Ưu tiên băng thông cao, nhiều vùng phủ; cân nhắc PRO/MESHPRO.",
+        },
+        shop: {
+          label: "Cửa hàng / showroom / shop bán hàng",
+          minSpeed: 300,
+          preferMesh: 1,
+          segment: "business",
+          upgradeTier: "plus",
+          note: "Ưu tiên POS, camera, điện thoại nhân viên và Wi‑Fi cho khách.",
+        },
+        restaurant: {
+          label: "Nhà hàng / quán ăn",
+          minSpeed: 500,
+          preferMesh: 2,
+          segment: "business",
+          upgradeTier: "vip",
+          note: "Ưu tiên nhiều vùng phủ vì không gian chia khu và lượng khách thay đổi theo giờ.",
+        },
+        homestay: {
+          label: "Homestay / nhà nghỉ",
+          minSpeed: 500,
+          preferMesh: 2,
+          segment: "business",
+          upgradeTier: "vip",
+          note: "Ưu tiên phủ Wi‑Fi theo tầng/phòng và nhiều thiết bị khách truy cập.",
+        },
+        hotel: {
+          label: "Khách sạn / nhiều phòng",
+          minSpeed: 600,
+          preferMesh: 3,
+          segment: "business",
+          upgradeTier: "vip",
+          note: "Nên khảo sát thực tế; ưu tiên đường truyền doanh nghiệp và nhiều điểm phát.",
+        },
+        clinic_salon: {
+          label: "Spa / salon / phòng khám",
+          minSpeed: 300,
+          preferMesh: 1,
+          segment: "business",
+          upgradeTier: "plus",
+          note: "Ưu tiên ổn định cho khách, camera, phần mềm quản lý và thanh toán.",
+        },
+        education: {
+          label: "Trung tâm học / lớp học / đào tạo",
+          minSpeed: 500,
+          preferMesh: 2,
+          segment: "business",
+          upgradeTier: "vip",
+          note: "Ưu tiên nhiều người truy cập đồng thời, video học và vùng phủ theo phòng.",
+        },
+        warehouse: {
+          label: "Kho / xưởng / văn phòng công trình",
+          minSpeed: 400,
+          preferMesh: 2,
+          segment: "business",
+          upgradeTier: "vip",
+          note: "Ưu tiên phủ xa, camera và độ ổn định; nên khảo sát vị trí lắp Mesh/AP.",
+        },
+        livestream: {
+          label: "Livestream / bán hàng online / sáng tạo nội dung",
+          minSpeed: 500,
+          preferMesh: 0,
+          segment: "performance",
+          upgradeTier: "vip",
+          note: "Ưu tiên băng thông cao và kết nối ổn định; nếu có thể nên dùng dây LAN cho thiết bị phát chính.",
+        },
+        gaming: {
+          label: "Gaming / phòng máy / eSports",
+          minSpeed: 1000,
+          preferMesh: 0,
+          segment: "performance",
+          upgradeTier: "vip",
+          note: "Ưu tiên độ ổn định, 1 Gbps nếu có và kết nối LAN cho máy cố định.",
+        },
+        camera_heavy: {
+          label: "Nhiều camera / giám sát là nhu cầu chính",
+          minSpeed: 500,
+          preferMesh: 2,
+          segment: "camera",
+          upgradeTier: "vip",
+          note: "Ưu tiên vùng phủ và kiểm tra số camera, Cloud/lưu trữ trước khi chốt.",
+        },
+        business_ip: {
+          label: "Doanh nghiệp cần IP tĩnh / server / VPN",
+          minSpeed: 400,
+          preferMesh: 0,
+          segment: "ip",
+          upgradeTier: "vip",
+          note: "Ưu tiên nhóm VIP/F có IP tĩnh hoặc block IP theo yêu cầu kỹ thuật.",
+        },
+        other: {
+          label: "Khác / theo thông số nhập",
+          minSpeed: 300,
+          preferMesh: 0,
+          segment: "home",
+          upgradeTier: "eco",
+          note: "Hệ thống chủ yếu dựa vào diện tích, số tầng và số thiết bị đã nhập.",
+        },
+      };
+      function normalizeUseCaseText(v) {
+        return String(v || "")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
+          .replace(/đ/g, "d")
+          .trim();
+      }
+      const useCaseLabelToKey = Object.fromEntries(
+        Object.entries(useCaseProfiles).map(([k, p]) => [
+          normalizeUseCaseText(p.label),
+          k,
+        ]),
+      );
+      function resolveUseCase(v) {
+        if (useCaseProfiles[v]) return v;
+        const raw = String(v || "").trim();
+        const t = normalizeUseCaseText(raw);
+        if (!t) return "family";
+        if (useCaseLabelToKey[t]) return useCaseLabelToKey[t];
+        if (t.includes("ip tinh") || t.includes("server") || t.includes("vpn"))
+          return "business_ip";
+        if (
+          t.includes("gaming") ||
+          t.includes("esport") ||
+          t.includes("phong may") ||
+          t.includes("game net")
+        )
+          return "gaming";
+        if (
+          t.includes("livestream") ||
+          t.includes("live stream") ||
+          t.includes("ban hang online") ||
+          t.includes("sang tao noi dung")
+        )
+          return "livestream";
+        if (t.includes("camera") || t.includes("giam sat"))
+          return "camera_heavy";
+        if (t.includes("khach san")) return "hotel";
+        if (t.includes("homestay") || t.includes("nha nghi")) return "homestay";
+        if (
+          t.includes("trung tam") ||
+          t.includes("lop hoc") ||
+          t.includes("dao tao") ||
+          t.includes("truong hoc")
+        )
+          return "education";
+        if (
+          t.includes("kho") ||
+          t.includes("xuong") ||
+          t.includes("cong trinh")
+        )
+          return "warehouse";
+        if (
+          t.includes("spa") ||
+          t.includes("salon") ||
+          t.includes("phong kham")
+        )
+          return "clinic_salon";
+        if (t.includes("nha hang") || t.includes("quan an"))
+          return "restaurant";
+        if (
+          t.includes("cua hang") ||
+          t.includes("showroom") ||
+          t.includes("shop")
+        )
+          return "shop";
+        if (
+          t.includes("van phong") ||
+          t.includes("cong ty") ||
+          t.includes("office") ||
+          t.includes("startup")
+        ) {
+          return t.includes("nhieu") ||
+            t.includes("lon") ||
+            t.includes("vua") ||
+            t.includes("dong")
+            ? "office_medium"
+            : "office_small";
+        }
+        if (
+          t.includes("cafe") ||
+          t.includes("ca phe") ||
+          t.includes("tra sua")
+        ) {
+          return t.includes("lon") ||
+            t.includes("nhieu khach") ||
+            t.includes("dong khach") ||
+            t.includes("2 tang") ||
+            t.includes("3 tang") ||
+            t.includes("4 tang")
+            ? "cafe_large"
+            : "cafe_small";
+        }
+        if (t.includes("gia dinh") || t.includes("nha o")) {
+          return t.includes("dong") ||
+            t.includes("nhieu") ||
+            t.includes("4k") ||
+            t.includes("game")
+            ? "family_heavy"
+            : "family";
+        }
+        return "other";
+      }
+      function useCaseText(v) {
+        if (useCaseProfiles[v]) return useCaseProfiles[v].label;
+        const raw = String(v || "").trim();
+        return raw || useCaseProfiles.other.label;
+      }
+      function speedValue(speed) {
+        const nums =
+          String(speed || "")
+            .match(/\d+/g)
+            ?.map(Number) || [];
+        return nums.length ? Math.max(...nums) : 0;
+      }
+
+      const basePackages = [
+        {
+          area: "T",
+          name: "NETVT01_T",
+          price: 195000,
+          speed: "300 Mbps",
+          mesh: 0,
+          capacity: [10, 15],
+          house: ["apartment"],
+          equipment: "01 Modem Wi‑Fi 6",
+          gift: "—",
+          total6: 1470000,
+          total12: 2640000,
+        },
+        {
+          area: "T",
+          name: "NETVT2_T",
+          price: 240000,
+          speed: "500 Mbps – 1 Gbps",
+          mesh: 0,
+          capacity: [10, 15],
+          house: ["apartment"],
+          equipment: "01 Modem Wi‑Fi 6",
+          gift: "01 báo khói + bảo hiểm cháy nổ 200 triệu khi đóng trước từ 6 tháng",
+          total6: 1740000,
+          total12: 3180000,
+        },
+        {
+          area: "T",
+          name: "MESHVT1_T",
+          price: 210000,
+          speed: "300 Mbps",
+          mesh: 1,
+          capacity: [20, 25],
+          house: ["1-2", "apartment"],
+          equipment: "01 Modem Wi‑Fi 6 + 01 Node Mesh",
+          gift: "—",
+          total6: 1560000,
+          total12: 2820000,
+        },
+        {
+          area: "T",
+          name: "MESHVT2_T",
+          price: 245000,
+          speed: "500 Mbps – 1 Gbps",
+          mesh: 2,
+          capacity: [25, 30],
+          house: ["2-3", "1-2", "wide"],
+          equipment: "01 Modem Wi‑Fi 6 + 02 Node Mesh",
+          gift: "02 báo khói + bảo hiểm cháy nổ",
+          total6: 1770000,
+          total12: 3240000,
+        },
+        {
+          area: "T",
+          name: "MESHVT3_T",
+          price: 299000,
+          speed: "500 Mbps – 1 Gbps",
+          mesh: 3,
+          capacity: [30, 40],
+          house: ["3-4", "2-3", "wide"],
+          equipment: "01 Modem Wi‑Fi 6 + 03 Node Mesh",
+          gift: "03 báo khói + bảo hiểm cháy nổ",
+          total6: 2094000,
+          total12: 3888000,
+        },
+        {
+          area: "H",
+          name: "NETVT01_H",
+          price: 235000,
+          speed: "300 Mbps",
+          mesh: 0,
+          capacity: [10, 15],
+          house: ["apartment"],
+          equipment: "01 Modem Wi‑Fi 6",
+          gift: "—",
+          total6: 1710000,
+          total12: 3120000,
+        },
+        {
+          area: "H",
+          name: "NETVT2_H",
+          price: 265000,
+          speed: "500 Mbps – 1 Gbps",
+          mesh: 0,
+          capacity: null,
+          house: ["apartment"],
+          equipment: "01 Modem Wi‑Fi 6",
+          gift: "01 báo khói + bảo hiểm cháy nổ khi đóng trước từ 6 tháng",
+          total6: 1890000,
+          total12: 3480000,
+        },
+        {
+          area: "H",
+          name: "MESHVT1_H",
+          price: 255000,
+          speed: "300 Mbps",
+          mesh: 1,
+          capacity: [20, 25],
+          house: ["1-2", "apartment"],
+          equipment: "01 Modem Wi‑Fi 6 + 01 Node Mesh",
+          gift: "—",
+          total6: 1830000,
+          total12: 3360000,
+        },
+        {
+          area: "H",
+          name: "MESHVT2_H",
+          price: 289000,
+          speed: "500 Mbps – 1 Gbps",
+          mesh: 2,
+          capacity: null,
+          house: ["2-3", "1-2", "wide"],
+          equipment: "01 Modem Wi‑Fi 6 + 02 Node Mesh",
+          gift: "02 báo khói + bảo hiểm cháy nổ",
+          total6: 2034000,
+          total12: 3768000,
+        },
+        {
+          area: "H",
+          name: "MESHVT3_H",
+          price: 359000,
+          speed: "500 Mbps – 1 Gbps",
+          mesh: 3,
+          capacity: null,
+          house: ["3-4", "2-3", "wide"],
+          equipment: "01 Modem Wi‑Fi 6 + 03 Node Mesh",
+          gift: "03 báo khói + bảo hiểm cháy nổ",
+          total6: 2454000,
+          total12: 4608000,
+        },
+      ];
+
+      const businessPackages = [
+        {
+          area: "T",
+          name: "PRO500",
+          price: 500000,
+          speed: "600 Mbps",
+          mesh: 0,
+          capacity: null,
+          house: ["apartment", "1-2", "2-3", "3-4", "wide"],
+          equipment:
+            "Gói PRO doanh nghiệp; bảng giá ghi 0 thiết bị mở rộng Wi‑Fi",
+          ip: "Không",
+          segment: "business",
+        },
+        {
+          area: "H",
+          name: "PRO600",
+          price: 500000,
+          speed: "600 Mbps",
+          mesh: 0,
+          capacity: null,
+          house: ["apartment", "1-2", "2-3", "3-4", "wide"],
+          equipment:
+            "Gói PRO doanh nghiệp; bảng giá ghi 0 thiết bị mở rộng Wi‑Fi",
+          ip: "Không",
+          segment: "business",
+        },
+        {
+          area: "B",
+          name: "PRO1000",
+          price: 700000,
+          speed: "1000 Mbps",
+          mesh: 0,
+          capacity: null,
+          house: ["apartment", "1-2", "2-3", "3-4", "wide"],
+          equipment: "Gói PRO doanh nghiệp; 1 Gbps",
+          ip: "Không",
+          segment: "business",
+        },
+        {
+          area: "T",
+          name: "MESHPRO500",
+          price: 650000,
+          speed: "600 Mbps",
+          mesh: 2,
+          capacity: null,
+          house: ["1-2", "2-3", "3-4", "wide"],
+          equipment: "Gói doanh nghiệp + 02 thiết bị mở rộng vùng phủ Wi‑Fi",
+          ip: "Không",
+          segment: "business",
+        },
+        {
+          area: "H",
+          name: "MESHPRO600",
+          price: 650000,
+          speed: "600 Mbps",
+          mesh: 2,
+          capacity: null,
+          house: ["1-2", "2-3", "3-4", "wide"],
+          equipment: "Gói doanh nghiệp + 02 thiết bị mở rộng vùng phủ Wi‑Fi",
+          ip: "Không",
+          segment: "business",
+        },
+        {
+          area: "B",
+          name: "MESHPRO1000",
+          price: 880000,
+          speed: "1000 Mbps",
+          mesh: 2,
+          capacity: null,
+          house: ["1-2", "2-3", "3-4", "wide"],
+          equipment:
+            "Gói doanh nghiệp 1 Gbps + 02 thiết bị mở rộng vùng phủ Wi‑Fi",
+          ip: "Không",
+          segment: "business",
+        },
+        {
+          area: "B",
+          name: "VIP200",
+          price: 800000,
+          speed: "200 Mbps",
+          mesh: 0,
+          capacity: null,
+          house: ["apartment", "1-2", "2-3", "3-4", "wide"],
+          equipment: "Gói doanh nghiệp có IP tĩnh",
+          ip: "Có",
+          segment: "ip",
+        },
+        {
+          area: "B",
+          name: "VIP500",
+          price: 1900000,
+          speed: "500 Mbps",
+          mesh: 0,
+          capacity: null,
+          house: ["apartment", "1-2", "2-3", "3-4", "wide"],
+          equipment: "Gói doanh nghiệp có IP tĩnh",
+          ip: "Có",
+          segment: "ip",
+        },
+        {
+          area: "B",
+          name: "VIP600",
+          price: 6600000,
+          speed: "600 Mbps",
+          mesh: 0,
+          capacity: null,
+          house: ["apartment", "1-2", "2-3", "3-4", "wide"],
+          equipment: "Gói doanh nghiệp có IP tĩnh + 1 Block IP /30",
+          ip: "Có + 1 Block IP /30",
+          segment: "ip",
+        },
+        {
+          area: "B",
+          name: "F200N",
+          price: 1100000,
+          speed: "400 Mbps",
+          mesh: 0,
+          capacity: null,
+          house: ["apartment", "1-2", "2-3", "3-4", "wide"],
+          equipment: "Gói doanh nghiệp có IP tĩnh",
+          ip: "Có",
+          segment: "ip",
+        },
+        {
+          area: "B",
+          name: "F300PLUS",
+          price: 9900000,
+          speed: "500 Mbps",
+          mesh: 0,
+          capacity: null,
+          house: ["apartment", "1-2", "2-3", "3-4", "wide"],
+          equipment: "Gói doanh nghiệp + 1 Block IP /30",
+          ip: "Có + 1 Block IP /30",
+          segment: "ip",
+        },
+        {
+          area: "B",
+          name: "F500BASIC",
+          price: 13200000,
+          speed: "600 Mbps",
+          mesh: 0,
+          capacity: null,
+          house: ["apartment", "1-2", "2-3", "3-4", "wide"],
+          equipment: "Gói doanh nghiệp + 2 Block IP /30",
+          ip: "Có + 2 Block IP /30",
+          segment: "ip",
+        },
+        {
+          area: "B",
+          name: "F1000PLUS",
+          price: 25000000,
+          speed: "1000 Mbps",
+          mesh: 0,
+          capacity: null,
+          house: ["apartment", "1-2", "2-3", "3-4", "wide"],
+          equipment: "Gói doanh nghiệp 1 Gbps có IP tĩnh",
+          ip: "Có",
+          segment: "ip",
+        },
+      ];
+
+      const gigaPackages = [
+        {
+          area: "H",
+          name: "GIGA1_H",
+          price: 320000,
+          speed: "1000 Mbps",
+          mesh: 0,
+          capacity: null,
+          house: ["apartment", "1-2", "2-3", "3-4", "wide"],
+          equipment: "Gói 1 Gbps; bảng giá ghi 0 thiết bị mở rộng Wi‑Fi",
+          ip: "Không",
+          segment: "performance",
+        },
+        {
+          area: "H",
+          name: "GIGA2_H",
+          price: 355000,
+          speed: "1000 Mbps",
+          mesh: 1,
+          capacity: null,
+          house: ["apartment", "1-2", "2-3", "3-4", "wide"],
+          equipment: "Gói 1 Gbps + 01 thiết bị mở rộng Wi‑Fi",
+          ip: "Không",
+          segment: "performance",
+        },
+        {
+          area: "H",
+          name: "GIGA3_H",
+          price: 390000,
+          speed: "1000 Mbps",
+          mesh: 2,
+          capacity: null,
+          house: ["1-2", "2-3", "3-4", "wide"],
+          equipment: "Gói 1 Gbps + 02 thiết bị mở rộng Wi‑Fi",
+          ip: "Không",
+          segment: "performance",
+        },
+        {
+          area: "H",
+          name: "GIGA4_H",
+          price: 425000,
+          speed: "1000 Mbps",
+          mesh: 3,
+          capacity: null,
+          house: ["2-3", "3-4", "wide"],
+          equipment: "Gói 1 Gbps + 03 thiết bị mở rộng Wi‑Fi",
+          ip: "Không",
+          segment: "performance",
+        },
+      ];
+
+      const tvPackages = [
+        {
+          area: "T",
+          type: "app",
+          name: "NETVT01T_GIAITRI",
+          price: 215000,
+          speed: "300 Mbps",
+          mesh: 0,
+          capacity: [10, 15],
+          house: ["apartment"],
+          equipment: "01 Modem Wi‑Fi 6 + App TV360",
+          total6: 1590000,
+          total12: 2880000,
+        },
+        {
+          area: "T",
+          type: "app",
+          name: "NETVT2T_GIAITRI (App)",
+          price: 260000,
+          speed: "500 Mbps – 1 Gbps",
+          mesh: 0,
+          capacity: [10, 15],
+          house: ["apartment"],
+          equipment: "01 Modem Wi‑Fi 6 hỗ trợ XGSPON + App TV360",
+          total6: 1860000,
+          total12: 3420000,
+        },
+        {
+          area: "T",
+          type: "box",
+          name: "NETVT2T_GIAITRI (Box)",
+          price: 280000,
+          speed: "500 Mbps – 1 Gbps",
+          mesh: 0,
+          capacity: null,
+          house: ["apartment"],
+          equipment: "01 Modem Wi‑Fi 6 + 01 TV360 Box giọng nói",
+          total6: 1980000,
+          total12: 3660000,
+        },
+        {
+          area: "T",
+          type: "app",
+          name: "MESHVT1T_GIAITRI (App)",
+          price: 230000,
+          speed: "300 Mbps",
+          mesh: 1,
+          capacity: [20, 25],
+          house: ["1-2", "apartment"],
+          equipment: "01 Modem Wi‑Fi 6 + 01 Node Mesh + App TV360",
+          total6: 1680000,
+          total12: 3060000,
+        },
+        {
+          area: "T",
+          type: "box",
+          name: "MESHVT1T_GIAITRI (Box)",
+          price: 250000,
+          speed: "300 Mbps",
+          mesh: 1,
+          capacity: [20, 25],
+          house: ["1-2", "apartment"],
+          equipment: "01 Modem Wi‑Fi 6 + 01 Node Mesh + 01 TV360 Box",
+          total6: 1800000,
+          total12: 3300000,
+        },
+        {
+          area: "H",
+          type: "app",
+          name: "NETVT01H_GIAITRI",
+          price: 255000,
+          speed: "300 Mbps",
+          mesh: 0,
+          capacity: [10, 15],
+          house: ["apartment"],
+          equipment: "01 Modem Wi‑Fi 6 + App TV360",
+          total6: 1830000,
+          total12: 3360000,
+        },
+        {
+          area: "H",
+          type: "app",
+          name: "NETVT2H_GIAITRI (App)",
+          price: 285000,
+          speed: "500 Mbps – 1 Gbps",
+          mesh: 0,
+          capacity: null,
+          house: ["apartment"],
+          equipment: "01 Modem Wi‑Fi 6 hỗ trợ XGSPON + App TV360",
+          total6: 2010000,
+          total12: 3720000,
+        },
+        {
+          area: "H",
+          type: "box",
+          name: "NETVT2H_GIAITRI (Box)",
+          price: 305000,
+          speed: "500 Mbps – 1 Gbps",
+          mesh: 0,
+          capacity: null,
+          house: ["apartment"],
+          equipment: "01 Modem Wi‑Fi 6 + 01 TV360 Box giọng nói",
+          total6: 2130000,
+          total12: 3960000,
+        },
+        {
+          area: "H",
+          type: "app",
+          name: "MESHVT1H_GIAITRI (App)",
+          price: 275000,
+          speed: "300 Mbps",
+          mesh: 1,
+          capacity: [20, 25],
+          house: ["1-2", "apartment"],
+          equipment: "01 Modem Wi‑Fi 6 + 01 Node Mesh + App TV360",
+          total6: 1950000,
+          total12: 3600000,
+        },
+        {
+          area: "H",
+          type: "box",
+          name: "MESHVT1H_GIAITRI (Box)",
+          price: 295000,
+          speed: "300 Mbps",
+          mesh: 1,
+          capacity: [20, 25],
+          house: ["1-2", "apartment"],
+          equipment: "01 Modem Wi‑Fi 6 + 01 Node Mesh + 01 TV360 Box",
+          total6: 2070000,
+          total12: 3840000,
+        },
+      ];
+
+      // TV360 tách riêng sau khi đã chọn gói mạng.
+      // 20k App / 40k Box là mức chênh lệch nhất quán giữa gói Internet nền và combo TV360 trong tài liệu.
+      // Đây là mức tham chiếu tư vấn từ tài liệu, không được coi là bảng giá TV360 độc lập nếu chính sách thực tế thay đổi.
+      const tvAddons = {
+        app: {
+          key: "app",
+          name: "TV360 App",
+          addonPrice: 20000,
+          equipment: "Dùng App TV360 trực tiếp trên Smart TV",
+          detail: "Phù hợp nhà đã có Smart TV, không cần đầu thu riêng.",
+        },
+        box: {
+          key: "box",
+          name: "TV360 Box",
+          addonPrice: 40000,
+          equipment: "01 TV360 Box, dùng đầu thu riêng",
+          detail:
+            "Phù hợp khách muốn đầu thu TV riêng và thao tác độc lập với Smart TV.",
+        },
+      };
+
+      const cameraPackages = [
+        // Theo ảnh "Khách hàng hòa mạng mới Internet + Camera Viettel":
+        // NETCB4/MESHCB4 phí HM 300k; NETVT01/NETVT2/MESHVT1/2/3 phí HM 500k.
+        // Giá tháng dưới đây tách theo ngoại thành (T) / nội thành (H).
+        {
+          area: "T",
+          name: "NETCB4_T",
+          price: 205000,
+          speed: "300 Mbps",
+          mesh: 0,
+          capacity: null,
+          house: ["apartment"],
+          equipment: "01 Modem Wi‑Fi 6 + 01 Camera Viettel + Cloud 1 ngày",
+          setupFee: 300000,
+          cameraPromo: true,
+          note: "Theo ảnh mới: được chọn camera trong nhà hoặc ngoài trời; miễn phí lắp Camera; bảo hành thiết bị; bảo trì 24/7.",
+        },
+        {
+          area: "H",
+          name: "NETCB4_H",
+          price: 245000,
+          speed: "300 Mbps",
+          mesh: 0,
+          capacity: null,
+          house: ["apartment"],
+          equipment: "01 Modem Wi‑Fi 6 + 01 Camera Viettel + Cloud 1 ngày",
+          setupFee: 300000,
+          cameraPromo: true,
+          note: "Theo ảnh mới: được chọn camera trong nhà hoặc ngoài trời; miễn phí lắp Camera; bảo hành thiết bị; bảo trì 24/7.",
+        },
+
+        {
+          area: "T",
+          name: "NETVT01_T + Camera",
+          price: 195000,
+          speed: "300 Mbps",
+          mesh: 0,
+          capacity: [10, 15],
+          house: ["apartment"],
+          equipment: "01 Modem Wi‑Fi 6 + 01 Camera Viettel + Cloud 1 ngày",
+          setupFee: 500000,
+          cameraPromo: true,
+          note: "Phí hòa mạng combo theo ảnh: 500.000đ, thu 1 lần khi đăng ký mới.",
+        },
+        {
+          area: "H",
+          name: "NETVT01_H + Camera",
+          price: 235000,
+          speed: "300 Mbps",
+          mesh: 0,
+          capacity: [10, 15],
+          house: ["apartment"],
+          equipment: "01 Modem Wi‑Fi 6 + 01 Camera Viettel + Cloud 1 ngày",
+          setupFee: 500000,
+          cameraPromo: true,
+          note: "Phí hòa mạng combo theo ảnh: 500.000đ, thu 1 lần khi đăng ký mới.",
+        },
+
+        {
+          area: "T",
+          name: "NETVT2_T + Camera",
+          price: 240000,
+          speed: "Tối đa 1 Gbps",
+          mesh: 0,
+          capacity: [10, 15],
+          house: ["apartment"],
+          equipment: "01 Modem Wi‑Fi 6 + 01 Camera Viettel + Cloud 1 ngày",
+          setupFee: 500000,
+          cameraPromo: true,
+          note: "Phí hòa mạng combo theo ảnh: 500.000đ, thu 1 lần khi đăng ký mới.",
+        },
+        {
+          area: "H",
+          name: "NETVT2_H + Camera",
+          price: 265000,
+          speed: "Tối đa 1 Gbps",
+          mesh: 0,
+          capacity: null,
+          house: ["apartment"],
+          equipment: "01 Modem Wi‑Fi 6 + 01 Camera Viettel + Cloud 1 ngày",
+          setupFee: 500000,
+          cameraPromo: true,
+          note: "Phí hòa mạng combo theo ảnh: 500.000đ, thu 1 lần khi đăng ký mới.",
+        },
+
+        {
+          area: "T",
+          name: "MESHCB4_T",
+          price: 220000,
+          speed: "300 Mbps",
+          mesh: 1,
+          capacity: null,
+          house: ["1-2", "apartment"],
+          equipment:
+            "01 Modem Wi‑Fi 6 + 01 Mesh Wi‑Fi + 01 Camera Viettel + Cloud 1 ngày",
+          setupFee: 300000,
+          cameraPromo: true,
+          note: "Theo ảnh mới: phí hòa mạng combo 300.000đ.",
+        },
+        {
+          area: "H",
+          name: "MESHCB4_H",
+          price: 265000,
+          speed: "300 Mbps",
+          mesh: 1,
+          capacity: null,
+          house: ["1-2", "apartment"],
+          equipment:
+            "01 Modem Wi‑Fi 6 + 01 Mesh Wi‑Fi + 01 Camera Viettel + Cloud 1 ngày",
+          setupFee: 300000,
+          cameraPromo: true,
+          note: "Theo ảnh mới: phí hòa mạng combo 300.000đ.",
+        },
+
+        {
+          area: "T",
+          name: "MESHVT1_T + Camera",
+          price: 210000,
+          speed: "300 Mbps",
+          mesh: 1,
+          capacity: [20, 25],
+          house: ["1-2", "apartment"],
+          equipment:
+            "01 Modem Wi‑Fi 6 + 01 Mesh Wi‑Fi + 01 Camera Viettel + Cloud 1 ngày",
+          setupFee: 500000,
+          cameraPromo: true,
+          note: "Phí hòa mạng combo theo ảnh: 500.000đ.",
+        },
+        {
+          area: "H",
+          name: "MESHVT1_H + Camera",
+          price: 255000,
+          speed: "300 Mbps",
+          mesh: 1,
+          capacity: [20, 25],
+          house: ["1-2", "apartment"],
+          equipment:
+            "01 Modem Wi‑Fi 6 + 01 Mesh Wi‑Fi + 01 Camera Viettel + Cloud 1 ngày",
+          setupFee: 500000,
+          cameraPromo: true,
+          note: "Phí hòa mạng combo theo ảnh: 500.000đ.",
+        },
+
+        {
+          area: "T",
+          name: "MESHVT2_T + Camera",
+          price: 245000,
+          speed: "Tối đa 1 Gbps",
+          mesh: 2,
+          capacity: [25, 30],
+          house: ["1-2", "2-3", "wide"],
+          equipment:
+            "01 Modem Wi‑Fi 6 + 02 Mesh Wi‑Fi + 01 Camera Viettel + Cloud 1 ngày",
+          setupFee: 500000,
+          cameraPromo: true,
+          note: "Phí hòa mạng combo theo ảnh: 500.000đ.",
+        },
+        {
+          area: "H",
+          name: "MESHVT2_H + Camera",
+          price: 289000,
+          speed: "Tối đa 1 Gbps",
+          mesh: 2,
+          capacity: null,
+          house: ["1-2", "2-3", "wide"],
+          equipment:
+            "01 Modem Wi‑Fi 6 + 02 Mesh Wi‑Fi + 01 Camera Viettel + Cloud 1 ngày",
+          setupFee: 500000,
+          cameraPromo: true,
+          note: "Phí hòa mạng combo theo ảnh: 500.000đ.",
+        },
+
+        {
+          area: "T",
+          name: "MESHVT3_T + Camera",
+          price: 299000,
+          speed: "Tối đa 1 Gbps",
+          mesh: 3,
+          capacity: [30, 40],
+          house: ["2-3", "3-4", "wide"],
+          equipment:
+            "01 Modem Wi‑Fi 6 + 03 Mesh Wi‑Fi + 01 Camera Viettel + Cloud 1 ngày",
+          setupFee: 500000,
+          cameraPromo: true,
+          note: "Phí hòa mạng combo theo ảnh: 500.000đ.",
+        },
+        {
+          area: "H",
+          name: "MESHVT3_H + Camera",
+          price: 359000,
+          speed: "Tối đa 1 Gbps",
+          mesh: 3,
+          capacity: null,
+          house: ["2-3", "3-4", "wide"],
+          equipment:
+            "01 Modem Wi‑Fi 6 + 03 Mesh Wi‑Fi + 01 Camera Viettel + Cloud 1 ngày",
+          setupFee: 500000,
+          cameraPromo: true,
+          note: "Phí hòa mạng combo theo ảnh: 500.000đ.",
+        },
+      ];
+
+      // Phí hòa mạng chung trong tài liệu tư vấn: 300.000đ/lần cho hòa mạng mới.
+      // Các combo Camera ở trên có mức riêng theo ảnh mới (300k hoặc 500k).
+      basePackages.forEach((p) => {
+        if (p.setupFee == null) p.setupFee = 300000;
+        p.setupFeeSource = "Phí hòa mạng chung trong tài liệu";
+      });
+      tvPackages.forEach((p) => {
+        if (p.setupFee == null) p.setupFee = 300000;
+        p.setupFeeSource = "Phí hòa mạng chung trong tài liệu";
+      });
+      gigaPackages.forEach((p) => {
+        if (p.setupFee == null) p.setupFee = 300000;
+        p.setupFeeSource =
+          "Tạm tính theo phí hòa mạng chung trong tài liệu – cần kiểm tra trước khi chốt";
+      });
+      businessPackages.forEach((p) => {
+        if (p.setupFee == null) p.setupFee = 300000;
+        p.setupFeeSource =
+          "Tạm tính theo phí hòa mạng chung trong tài liệu – cần kiểm tra chính sách doanh nghiệp";
+      });
+      cameraPackages.forEach((p) => {
+        p.setupFeeSource = "Theo ảnh bảng combo Internet + Camera Viettel";
+      });
+
+      const upgradeLevels = [
+        138000,
+        153000,
+        165000,
+        173000,
+        180000,
+        190000,
+        200000,
+        210000,
+        230000,
+        250000,
+        280000,
+        "all",
+      ];
+      const ecoPrices = [
+        168000, 183000, 195000, 203000, 210000, 220000, 230000, 240000, 250000,
+        270000, 290000, 305000,
+      ];
+      const plusPrices = [
+        183000, 198000, 210000, 218000, 225000, 235000, 245000, 255000, 265000,
+        285000, 305000, 320000,
+      ];
+      const vipPrices = [
+        198000, 213000, 225000, 233000, 240000, 250000, 260000, 270000, 280000,
+        300000, 320000, 335000,
+      ];
+
+      function upgradePackage(tier, idx) {
+        const n = idx + 1;
+        if (tier === "eco")
+          return {
+            name: `MeshEco${n}`,
+            price: ecoPrices[idx],
+            speed: "300 Mbps",
+            mesh: 2,
+            capacity: [20, 25],
+            range: "Căn hộ 1–2 phòng ngủ, nhà 1–2 tầng",
+          };
+        if (tier === "plus")
+          return {
+            name: `MeshPlus${n}`,
+            price: plusPrices[idx],
+            speed: "350 Mbps",
+            mesh: 3,
+            capacity: [25, 30],
+            range: "Nhà ống dài, nhà 2–3 tầng, căn hộ rộng",
+          };
+        return {
+          name: `MeshVip${n}`,
+          price: vipPrices[idx],
+          speed: "450 Mbps",
+          mesh: 4,
+          capacity: [30, 40],
+          range: "Nhà 3–4 tầng, biệt thự, quán cafe/VP vừa",
+        };
+      }
+
+      const houseProfiles = {
+        apartment: { label: "Căn hộ 1 sàn / nhà nhỏ", floors: 1 },
+        "1-2": { label: "Nhà 1–2 tầng", floors: 2 },
+        "2-3": { label: "Nhà 2–3 tầng / nhà ống dài", floors: 3 },
+        "3-4": { label: "Nhà 3–4 tầng / biệt thự", floors: 4 },
+        wide: { label: "Nhà rất rộng / nhiều phòng", floors: 1 },
+      };
+      function normalizeHouseText(v) {
+        return String(v || "")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
+          .replace(/đ/g, "d")
+          .trim();
+      }
+      function extractFloorCount(v) {
+        const t = normalizeHouseText(v);
+        let m = t.match(/(?:^|\s)(\d{1,2})\s*(?:tang|lau)(?:\s|$)/);
+        if (m) {
+          const n = Math.max(1, Math.min(20, Number(m[1]) || 1));
+          return n;
+        }
+        if (t.includes("cap 4") || t.includes("1 san") || t.includes("mot san"))
+          return 1;
+        return null;
+      }
+      function resolveHouse(v) {
+        if (houseProfiles[v]) return v;
+        const t = normalizeHouseText(v);
+        if (!t) return "apartment";
+        const floors = extractFloorCount(v);
+        if (
+          t.includes("chung cu") ||
+          t.includes("can ho") ||
+          t.includes("cap 4") ||
+          t.includes("1 san")
+        )
+          return "apartment";
+        if (
+          t.includes("san vuon") ||
+          t.includes("khong gian mo") ||
+          t.includes("nha xuong") ||
+          t.includes("kho rong") ||
+          t.includes("rat rong") ||
+          t.includes("nhieu phong") ||
+          t.includes("mat bang rong")
+        )
+          return "wide";
+        if (t.includes("biet thu"))
+          return floors && floors <= 2 ? "1-2" : "3-4";
+        if (
+          t.includes("nha ong") &&
+          (t.includes("nhieu tang") || (floors && floors >= 3))
+        )
+          return floors >= 4 ? "3-4" : "2-3";
+        if (floors !== null) {
+          if (floors <= 1) return "apartment";
+          if (floors <= 2) return "1-2";
+          if (floors <= 3) return "2-3";
+          return "3-4";
+        }
+        if (t.includes("hep") && t.includes("dai")) return "2-3";
+        if (t.includes("rong")) return "wide";
+        return "apartment";
+      }
+      function getFloorEstimate(house, houseInput = "") {
+        const explicit = extractFloorCount(houseInput);
+        if (explicit !== null) return explicit;
+        const key = resolveHouse(house);
+        return houseProfiles[key]?.floors || 1;
+      }
+
+      // Ước tính nội bộ phục vụ tư vấn, không phải thông số vùng phủ chính thức của Viettel.
+      // Quy tắc: 1 vùng phủ cho khoảng 80 m² sử dụng, đồng thời nhà nhiều tầng nên có ít nhất 1 vùng phủ/tầng.
+      function estimateNetworkNeed(house, areaM2, houseInput = "") {
+        const houseKey = resolveHouse(house);
+        const floors = getFloorEstimate(houseKey, houseInput);
+        const perFloor = Math.max(15, Number(areaM2) || 60);
+        const totalArea = perFloor * floors;
+        const zonesByArea = Math.max(1, Math.ceil(totalArea / 80));
+        let zones = Math.max(floors, zonesByArea);
+        if (houseKey === "wide")
+          zones = Math.max(zones, Math.ceil(perFloor / 70));
+        const meshNeeded = Math.max(0, zones - 1);
+        const areaBand =
+          perFloor <= 50
+            ? "nhỏ"
+            : perFloor <= 80
+              ? "vừa"
+              : perFloor <= 120
+                ? "rộng"
+                : "rất rộng";
+        return {
+          houseKey,
+          floors,
+          perFloor,
+          totalArea,
+          zones,
+          meshNeeded,
+          areaBand,
+        };
+      }
+
+      function cameraLoadInfo(wifiCams = 0, analogCams = 0) {
+        wifiCams = Math.max(0, Number(wifiCams) || 0);
+        analogCams = Math.max(0, Number(analogCams) || 0);
+        const analogRecorderLoad = analogCams > 0 ? 1 : 0;
+        const networkLoad = wifiCams + analogRecorderLoad;
+        const totalCameras = wifiCams + analogCams;
+        let note = "Không có camera đang sử dụng.";
+        if (totalCameras) {
+          const parts = [];
+          if (wifiCams) parts.push(`${wifiCams} camera Wi‑Fi/IP`);
+          if (analogCams) parts.push(`${analogCams} camera Analog`);
+          note = `Có ${parts.join(" + ")}. Tải thiết bị mạng quy đổi khoảng ${networkLoad} thiết bị (${wifiCams} camera Wi‑Fi/IP${analogCams ? ` + 1 đầu ghi Analog` : ""}).`;
+        }
+        return {
+          wifiCams,
+          analogCams,
+          analogRecorderLoad,
+          networkLoad,
+          totalCameras,
+          note,
+        };
+      }
+
+      function cameraAdvice(cameraInfo, house, areaM2, houseInput = "") {
+        if (!cameraInfo.totalCameras) return "Không có camera đang dùng.";
+        const need = estimateNetworkNeed(house, areaM2, houseInput);
+        const advice = [];
+        if (cameraInfo.wifiCams >= 4)
+          advice.push(
+            "nhiều camera Wi‑Fi nên ưu tiên phủ sóng ổn định tại vị trí lắp camera",
+          );
+        if (cameraInfo.wifiCams >= 8)
+          advice.push(
+            "số camera Wi‑Fi khá lớn, nên ưu tiên gói tốc độ cao và khảo sát Wi‑Fi thực tế",
+          );
+        if (cameraInfo.analogCams > 0)
+          advice.push(
+            "camera Analog đi qua đầu ghi, nên ưu tiên nối LAN từ đầu ghi về modem/router",
+          );
+        if (cameraInfo.totalCameras >= 8)
+          advice.push(
+            "nên kiểm tra nhu cầu xem từ xa/Cloud và băng thông tải lên trước khi chốt",
+          );
+        if (need.meshNeeded > 0 && cameraInfo.wifiCams > 0)
+          advice.push(
+            `nhà ước tính cần khoảng ${need.meshNeeded} Mesh ngoài modem, cần đặt Mesh sao cho vùng camera vẫn có tín hiệu tốt`,
+          );
+        return advice.length
+          ? advice.join("; ") + "."
+          : "Cấu hình camera chưa tạo tải lớn theo quy tắc ước tính của công cụ.";
+      }
+
+      function scorePackage(
+        p,
+        house,
+        devices,
+        areaM2,
+        useCase = "family",
+        cameraInfo = { wifiCams: 0, analogCams: 0, totalCameras: 0 },
+        houseInput = "",
+      ) {
+        let s = 0;
+        const profile =
+          useCaseProfiles[resolveUseCase(useCase)] || useCaseProfiles.family;
+        if (p.house?.includes(house)) s += 5;
+        if (p.capacity) {
+          if (devices <= p.capacity[1]) s += 4;
+          else s -= 5;
+          if (devices >= p.capacity[0] - 3 && devices <= p.capacity[1]) s += 2;
+        } else s += 1;
+        const need = estimateNetworkNeed(house, areaM2, houseInput);
+        const have = p.mesh || 0;
+        const cameraMeshBoost = (cameraInfo.wifiCams || 0) >= 4 ? 1 : 0;
+        const wantedMesh = Math.max(
+          need.meshNeeded,
+          profile.preferMesh || 0,
+          cameraMeshBoost,
+        );
+        if (have >= wantedMesh) s += 5 - Math.min(3, have - wantedMesh);
+        else s -= Math.min(10, (wantedMesh - have) * 4);
+        if (need.areaBand === "rất rộng" && have >= 2) s += 1.5;
+        const sp = speedValue(p.speed);
+        const cameraMinSpeed = (cameraInfo.wifiCams || 0) >= 8 ? 500 : 0;
+        const wantedSpeed = Math.max(profile.minSpeed, cameraMinSpeed);
+        if (sp >= wantedSpeed) s += 4;
+        else s -= Math.min(8, Math.ceil((wantedSpeed - sp) / 200) * 2);
+        if ((cameraInfo.wifiCams || 0) >= 4 && (p.mesh || 0) > 0) s += 1;
+        if (profile.segment === "business") {
+          if (p.segment === "business") s += 4;
+          if (p.segment === "ip") s -= 1;
+        } else if (profile.segment === "performance") {
+          if (p.segment === "performance" || sp >= 1000) s += 5;
+        } else if (profile.segment === "ip") {
+          if (p.segment === "ip" || (p.ip && p.ip !== "Không")) s += 12;
+          else s -= 10;
+        } else if (profile.segment === "camera") {
+          if (p.app || String(p.name).includes("CAM")) s += 6;
+        } else {
+          if (!p.segment || p.segment === "home") s += 2;
+        }
+        return s;
+      }
+
+      function houseText(v, raw = "") {
+        const typed = String(raw || "").trim();
+        if (typed) return typed;
+        const key = resolveHouse(v);
+        return houseProfiles[key]?.label || houseProfiles.apartment.label;
+      }
+      function areaText(v) {
+        return v === "H"
+          ? "Nội thành Hà Nội / TP.HCM"
+          : "Ngoại thành HN/HCM hoặc 32 tỉnh khác";
+      }
+
+      function isOfficeOrBusinessUseCase(v) {
+        const t = normalizeUseCaseText(v);
+        const key = resolveUseCase(v);
+        return (
+          ["office_small", "office_medium", "business_ip"].includes(key) ||
+          t.includes("van phong") ||
+          t.includes("cong ty") ||
+          t.includes("doanh nghiep") ||
+          t.includes("office") ||
+          t.includes("startup")
+        );
+      }
+      function ipNeedText(v) {
+        return (
+          {
+            no: "Không cần IP tĩnh",
+            yes: "Cần IP tĩnh",
+            block: "Cần Block IP /30 hoặc nhiều IP",
+            unknown: "Chưa rõ – cần hỏi khách",
+          }[v] || "Không áp dụng"
+        );
+      }
+      function ipPreferenceScore(p, ipNeed) {
+        const hasIp = p.ip && p.ip !== "Không";
+        const hasBlock = hasIp && String(p.ip).toLowerCase().includes("block");
+        if (ipNeed === "yes") return hasIp ? (hasBlock ? 5 : 10) : -14;
+        if (ipNeed === "block") return hasBlock ? 16 : hasIp ? 2 : -16;
+        if (ipNeed === "no") return p.segment === "ip" ? -12 : 2;
+        return 0;
+      }
+      function packageFee(p, c) {
+        if (c?.upgrade)
+          return {
+            known: false,
+            fee: null,
+            source:
+              "Khách nâng cấp – không dùng phép tính phí hòa mạng mới trong công cụ này.",
+          };
+        if (p.setupFee == null)
+          return {
+            known: false,
+            fee: null,
+            source: "Chưa có dữ liệu phí hòa mạng cho gói này.",
+          };
+        return {
+          known: true,
+          fee: Number(p.setupFee),
+          source: p.setupFeeSource || "Theo dữ liệu phí hòa mạng đã nhập.",
+        };
+      }
+      function paymentBreakdown(p, c) {
+        const f = packageFee(p, c);
+        const base = Number(p.price) || 0;
+        return {
+          ...f,
+          oneNoFee: base,
+          oneWithFee: f.known ? base + f.fee : null,
+          sixNoFee: base * 6,
+          sixWithFee: f.known ? base * 6 + f.fee : null,
+          twelveNoFee: base * 12,
+          twelveWithFee: f.known ? base * 12 + f.fee : null,
+        };
+      }
+      function feeBoxHTML(p, c) {
+        const x = paymentBreakdown(p, c);
+        if (!x.known) {
+          return `<div class="fee-box"><div class="fee-head"><b>Phí hòa mạng</b><span>Chưa xác định</span></div><div class="fee-source">${x.source}</div></div>`;
+        }
+        return `<div class="fee-box">
+    <div class="fee-head"><b>Phí hòa mạng: ${money(x.fee)}</b><span>Thu 1 lần khi hòa mạng mới</span></div>
+    <div class="fee-grid">
+      <div class="fee-cell"><div class="fee-label">1 tháng – chưa phí HM</div><div class="fee-value">${money(x.oneNoFee)}</div></div>
+      <div class="fee-cell"><div class="fee-label">1 tháng – có phí HM</div><div class="fee-value">${money(x.oneWithFee)}</div></div>
+      <div class="fee-cell"><div class="fee-label">6 tháng – chưa phí HM</div><div class="fee-value">${money(x.sixNoFee)}</div></div>
+      <div class="fee-cell"><div class="fee-label">6 tháng – có phí HM</div><div class="fee-value">${money(x.sixWithFee)}</div></div>
+      <div class="fee-cell"><div class="fee-label">12 tháng – chưa phí HM</div><div class="fee-value">${money(x.twelveNoFee)}</div></div>
+      <div class="fee-cell"><div class="fee-label">12 tháng – có phí HM</div><div class="fee-value">${money(x.twelveWithFee)}</div></div>
+    </div>
+    <div class="fee-source">${x.source}</div>
+  </div>`;
+      }
+      function buildFeeObjectionScript(p, c) {
+        const x = paymentBreakdown(p, c);
+        if (!x.known) {
+          return `Gói ${p.name} hiện chưa có mức phí hòa mạng chắc chắn trong dữ liệu. Không nên báo một con số chưa kiểm tra. Hãy nói với khách: “Em đã có giá cước ${money(p.price)}/tháng. Riêng phí hòa mạng em sẽ kiểm tra đúng chính sách của gói này rồi báo anh/chị ngay, để mình không bị phát sinh ngoài dự kiến.”`;
+        }
+        const benefits = p.cameraPromo
+          ? `Với combo Camera trong ảnh, khách được trang bị Modem Wi‑Fi 6 và 01 Camera, được chọn Camera trong nhà/ngoài trời, miễn phí lắp Camera, bảo hành thiết bị trong quá trình dùng dịch vụ và bảo trì 24/7.`
+          : `Phí hòa mạng là khoản thu một lần khi đăng ký mới, không cộng lặp lại vào cước hàng tháng.`;
+        return `CÁCH GIẢI THÍCH KHI KHÁCH PHÂN VÂN PHÍ HÒA MẠNG
+
+Anh/chị ơi, em tách riêng để mình dễ cân đối nhé:
+• Cước gói ${p.name}: ${money(p.price)}/tháng.
+• Phí hòa mạng: ${money(x.fee)} – chỉ tính 1 lần khi đăng ký mới.
+• Nếu đóng 6 tháng: chưa phí là ${money(x.sixNoFee)}, có phí là ${money(x.sixWithFee)}.
+• Nếu đóng 12 tháng: chưa phí là ${money(x.twelveNoFee)}, có phí là ${money(x.twelveWithFee)}.
+
+${benefits}
+
+Cách chốt mềm:
+“Em không gộp phí vào giá để anh/chị khỏi bị nhầm. Mình thấy rõ phần cước và phần hòa mạng riêng. Nếu anh/chị thấy gói này phù hợp về tốc độ và vùng phủ, em có thể lên phương án 6 tháng hoặc 12 tháng để anh/chị chọn mức tiền ban đầu dễ cân đối nhất. Anh/chị muốn em tính theo 6 tháng hay 12 tháng?”
+
+Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ hoặc là ‘bắt buộc do cơ quan nhà nước’ nếu chưa có căn cứ. Báo đúng số tiền, quyền lợi và điều kiện trong bảng hiện có.`;
+      }
+
+      function cardHTML(p, best, context) {
+        const capacity = p.capacity
+          ? `${p.capacity[0]}–${p.capacity[1]} thiết bị`
+          : "Tài liệu không nêu số thiết bị";
+        const meshText = p.mesh ? `${p.mesh} Node Mesh` : "Không kèm Mesh";
+        const script = buildScript(p, context);
+        const feeScript = buildFeeObjectionScript(p, context);
+        return `<article class="card ${best ? "best" : ""}">
+    <div class="pkg">${p.name}</div>
+    <div class="price">${money(p.price)} <small>/tháng</small></div>
+    <div class="meta"><span class="tag red">${p.speed}</span><span class="tag">${meshText}</span><span class="tag">${capacity}</span></div>
+    <ul>
+      <li><b>Thiết bị/dịch vụ:</b> ${p.equipment || p.range || "Theo bảng gói"}</li>
+      ${p.gift && p.gift !== "—" ? `<li><b>Quà tặng:</b> ${p.gift}</li>` : ""}
+      ${p.app ? `<li><b>Ứng dụng:</b> ${p.app}</li>` : ""}
+      ${p.note ? `<li><b>Lưu ý:</b> ${p.note}</li>` : ""}
+      ${p.range ? `<li><b>Phạm vi phù hợp:</b> ${p.range}</li>` : ""}
+      ${p.ip ? `<li><b>IP tĩnh:</b> ${p.ip}</li>` : ""}
+    </ul>
+    ${feeBoxHTML(p, context)}
+    <div class="script"><b>Giải thích ngắn:</b> ${shortReason(p, context)}</div>
+    <div class="row-actions">
+      <button class="mini primary" onclick='showScript(${JSON.stringify(script)},"Lời tư vấn gói ${p.name}")'>Xem lời tư vấn</button>
+      <button class="mini fee-help" onclick='showScript(${JSON.stringify(feeScript)},"Xử lý khách phân vân phí hòa mạng")'>Khách phân vân phí hòa mạng?</button>
+    </div>
+  </article>`;
+      }
+
+      function shortReason(p, c) {
+        const need = estimateNetworkNeed(c.house, c.areaM2, c.houseInput);
+        const mesh = p.mesh
+          ? `có ${p.mesh} Mesh giúp mở rộng vùng phủ`
+          : "không kèm Mesh";
+        const cap = p.capacity
+          ? `tài liệu nêu khoảng ${p.capacity[0]}–${p.capacity[1]} thiết bị`
+          : "tài liệu không nêu số thiết bị chịu tải riêng";
+        const coverage =
+          (p.mesh || 0) >= need.meshNeeded
+            ? `số Mesh đạt mức ước tính ${need.meshNeeded} Mesh cho khoảng ${need.totalArea} m² sử dụng`
+            : `thấp hơn mức ước tính ${need.meshNeeded} Mesh; nên khảo sát thực tế hoặc bổ sung Mesh`;
+        const camText = c.cameraInfo?.totalCameras
+          ? ` Có ${c.cameraInfo.wifiCams} camera Wi‑Fi/IP và ${c.cameraInfo.analogCams} camera Analog; tải mạng quy đổi khoảng ${c.effectiveDevices} thiết bị.`
+          : ` Có khoảng ${c.devices} thiết bị khác và không có camera đang dùng.`;
+        return `Nhu cầu ${useCaseText(c.useCaseInput || c.useCase).toLowerCase()}; khách ở ${houseText(c.house, c.houseInput).toLowerCase()}, khoảng ${c.areaM2} m²/sàn.${camText} Gói này ${mesh}, ${cap}; ${coverage}.`;
+      }
+
+      function buildScript(p, c) {
+        let extra = "";
+        if (c.tv !== "none" && c.tvMode === "combo") {
+          if (c.tv === "app")
+            extra +=
+              " Gói này là combo có TV360 App, phù hợp nếu nhà mình dùng Smart TV.";
+          else if (c.tv === "box")
+            extra +=
+              " Gói này là combo có TV360 Box, phù hợp nếu anh/chị muốn dùng đầu thu riêng.";
+          else
+            extra +=
+              " Phần TV360 đang ở chế độ so sánh App và Box trong nhóm combo.";
+        }
+        if (c.tv !== "none" && c.tvMode === "separate") {
+          if (c.tv === "app")
+            extra += ` Sau khi chốt gói mạng này, mình có thể tư vấn thêm TV360 App riêng; mức cộng tham chiếu từ chênh lệch combo trong tài liệu là ${money(tvAddons.app.addonPrice)}/tháng, tổng dự kiến mạng + TV là ${money(p.price + tvAddons.app.addonPrice)}/tháng.`;
+          else if (c.tv === "box")
+            extra += ` Sau khi chốt gói mạng này, mình có thể tư vấn thêm TV360 Box riêng; mức cộng tham chiếu là ${money(tvAddons.box.addonPrice)}/tháng, tổng dự kiến mạng + TV là ${money(p.price + tvAddons.box.addonPrice)}/tháng.`;
+          else
+            extra +=
+              " Sau khi chốt gói mạng, mình có thể đặt hai lựa chọn TV360 App và TV360 Box cạnh nhau để khách so sánh.";
+        }
+        if (c.camera !== "none") {
+          if (
+            p.cameraPromo ||
+            String(p.name).includes("Camera") ||
+            String(p.name).includes("CB4")
+          ) {
+            extra += ` Khách muốn lắp thêm ${c.newCameraCount || 1} Camera Viettel (${c.camera === "indoor" ? "trong nhà" : "ngoài trời"}). Combo Camera theo ảnh mới gồm 01 Camera + Cloud 1 ngày; nếu lắp nhiều hơn 1 camera hoặc cần Cloud dài hơn thì phải kiểm tra/cộng chi phí bổ sung.`;
+          } else {
+            extra += ` Khách còn có nhu cầu lắp ${c.newCameraCount || 1} Camera Viettel (${c.camera === "indoor" ? "trong nhà" : "ngoài trời"}). Vì gói ${p.name} đang được chọn theo nhu cầu IP/doanh nghiệp, Camera nên báo thành phần riêng để không làm mất yêu cầu IP tĩnh.`;
+          }
+        }
+        if (c.cameraInfo?.totalCameras)
+          extra += ` Hiện khách đang có ${c.cameraInfo.wifiCams} camera Wi‑Fi/IP và ${c.cameraInfo.analogCams} camera Analog. ${cameraAdvice(c.cameraInfo, c.house, c.areaM2, c.houseInput)}`;
+        if (c.upgrade)
+          extra += ` Đây là gói nâng cấp thuộc bảng Mesh ${p.name.startsWith("MeshEco") ? "Eco" : p.name.startsWith("MeshPlus") ? "Plus" : "Vip"} cho khách đang dùng cước cũ.`;
+        const need = estimateNetworkNeed(c.house, c.areaM2, c.houseInput);
+        const coverageText =
+          (p.mesh || 0) >= need.meshNeeded
+            ? `Theo phần ước tính diện tích, nhà mình cần khoảng ${need.zones} vùng phủ, tương đương khoảng ${need.meshNeeded} Mesh ngoài modem chính; gói này đáp ứng mức ước tính đó.`
+            : `Theo phần ước tính diện tích, nhà mình có thể cần khoảng ${need.zones} vùng phủ, tương đương khoảng ${need.meshNeeded} Mesh ngoài modem chính. Gói này đang có ${p.mesh || 0} Mesh nên em khuyên khảo sát thực tế hoặc bổ sung Mesh trước khi chốt.`;
+        const camSummary = c.cameraInfo?.totalCameras
+          ? ` Ngoài ${c.devices} thiết bị khác, khách đang có ${c.cameraInfo.wifiCams} camera Wi‑Fi/IP và ${c.cameraInfo.analogCams} camera Analog; công cụ quy đổi tải mạng khoảng ${c.effectiveDevices} thiết bị.`
+          : ` Khách có khoảng ${c.devices} thiết bị kết nối khác và không có camera đang sử dụng.`;
+        const pay = paymentBreakdown(p, c);
+        const feeText = pay.known
+          ? ` Phí hòa mạng là ${money(pay.fee)} và chỉ tính 1 lần khi đăng ký mới. Nếu tính 6 tháng: chưa phí ${money(pay.sixNoFee)}, có phí ${money(pay.sixWithFee)}; 12 tháng: chưa phí ${money(pay.twelveNoFee)}, có phí ${money(pay.twelveWithFee)}.`
+          : "";
+        const ipText = c.ipRelevant
+          ? ` Nhu cầu IP của khách: ${ipNeedText(c.ipNeed)}.${p.ip ? ` Gói này: ${p.ip}.` : ""}`
+          : "";
+        return `Anh/chị đang dùng cho nhu cầu ${useCaseText(c.useCaseInput || c.useCase).toLowerCase()}, tại ${houseText(c.house, c.houseInput).toLowerCase()}, diện tích khoảng ${c.areaM2} m²/sàn, ước tính tổng diện tích sử dụng khoảng ${need.totalArea} m².${camSummary} Em đề xuất gói ${p.name} giá ${money(p.price)}/tháng, tốc độ ${p.speed}. ${p.mesh ? `Gói có ${p.mesh} thiết bị Mesh để mở rộng vùng phủ Wi‑Fi.` : "Gói không kèm Mesh."} ${coverageText} ${p.capacity ? `Theo tài liệu, nhóm này phù hợp khoảng ${p.capacity[0]}–${p.capacity[1]} thiết bị.` : "Tài liệu không nêu riêng số thiết bị chịu tải nên em không cam kết con số cụ thể."}${ipText}${feeText}${extra}`;
+      }
+
+      function renderSummary(c) {
+        const need = estimateNetworkNeed(c.house, c.areaM2, c.houseInput);
+        document.getElementById("summary").innerHTML = `
+  <div class="item"><div class="k">Nhu cầu sử dụng</div><div class="v">${useCaseText(c.useCaseInput || c.useCase)}</div></div>
+  <div class="item"><div class="k">Kiểu nhà</div><div class="v">${houseText(c.house, c.houseInput)}</div></div>
+  <div class="item"><div class="k">Diện tích</div><div class="v">${c.areaM2} m²/sàn</div></div>
+  <div class="item"><div class="k">Ước tính tổng</div><div class="v">~${need.totalArea} m²</div></div>
+  <div class="item"><div class="k">Thiết bị khác</div><div class="v">Khoảng ${c.devices}</div></div>
+  <div class="item"><div class="k">Camera đang dùng</div><div class="v">${c.cameraInfo.totalCameras ? `${c.cameraInfo.wifiCams} Wi‑Fi/IP + ${c.cameraInfo.analogCams} Analog` : "Không có"}</div></div>
+  <div class="item"><div class="k">Tải mạng quy đổi</div><div class="v">~${c.effectiveDevices} thiết bị</div></div>
+  <div class="item"><div class="k">Ước tính vùng phủ</div><div class="v">${need.zones} vùng / ~${need.meshNeeded} Mesh</div></div>
+  <div class="item"><div class="k">Khu vực</div><div class="v">${c.upgrade ? "Không áp dụng phân vùng H/T" : areaText(c.area)}</div></div>
+  ${c.ipRelevant ? `<div class="item"><div class="k">IP tĩnh văn phòng</div><div class="v">${ipNeedText(c.ipNeed)}</div></div>` : ""}
+  <div class="item"><div class="k">Nhu cầu thêm</div><div class="v">${c.upgrade ? "Nâng cấp Mesh" : [c.tv !== "none" ? `TV360 ${c.tvMode === "separate" ? "riêng" : "combo"}` : "", c.camera !== "none" ? "Camera" : ""].filter(Boolean).join(" + ") || "Internet"}</div></div>`;
+      }
+
+      function analysisBox(c) {
+        const n = estimateNetworkNeed(c.house, c.areaM2);
+        const extraWarn =
+          n.meshNeeded > 3 && !c.upgrade
+            ? `<div class="ai-chip warn-chip"><b>Cần lưu ý:</b> ước tính cần hơn 3 Mesh. Bảng khách mới hiện cao nhất là MESHVT3 (3 Node Mesh), nên khảo sát thực tế hoặc tính phương án bổ sung Mesh.</div>`
+            : "";
+        const profile =
+          useCaseProfiles[resolveUseCase(c.useCase)] || useCaseProfiles.family;
+        return `<div class="ai-box"><b>Phân tích theo diện tích + mục đích sử dụng</b><div class="hint">Đây là ước tính nội bộ để hỗ trợ tư vấn, không phải cam kết vùng phủ chính thức của Viettel.</div><div class="ai-grid">
+    <div class="ai-chip"><b>Nhu cầu đã nhập:</b> ${useCaseText(c.useCaseInput || c.useCase)}</div>
+    <div class="ai-chip"><b>Nhóm hệ thống nhận diện:</b> ${profile.label}</div>
+    ${c.ipRelevant ? `<div class="ai-chip"><b>Nhu cầu IP tĩnh:</b> ${ipNeedText(c.ipNeed)}</div>` : ""}
+    <div class="ai-chip"><b>Ưu tiên:</b> ${profile.note}</div>
+    <div class="ai-chip"><b>Không gian đã nhập:</b> ${houseText(c.house, c.houseInput)}</div>
+    <div class="ai-chip"><b>Nhóm không gian nhận diện:</b> ${houseProfiles[c.house]?.label || houseProfiles.apartment.label}</div>
+    <div class="ai-chip"><b>Diện tích/sàn:</b> ${n.perFloor} m²</div>
+    <div class="ai-chip"><b>Số tầng quy đổi:</b> ${n.floors}</div>
+    <div class="ai-chip"><b>Tổng diện tích ước tính:</b> ${n.totalArea} m²</div>
+    <div class="ai-chip"><b>Vùng phủ đề xuất:</b> ${n.zones}</div>
+    <div class="ai-chip"><b>Mesh ước tính:</b> ${n.meshNeeded}</div>
+    <div class="ai-chip"><b>Camera Wi‑Fi/IP:</b> ${c.cameraInfo.wifiCams}</div>
+    <div class="ai-chip"><b>Camera Analog:</b> ${c.cameraInfo.analogCams}</div>
+    <div class="ai-chip"><b>Tải mạng quy đổi:</b> ~${c.effectiveDevices} thiết bị</div>
+    ${c.cameraInfo.totalCameras ? `<div class="ai-chip"><b>Tư vấn camera:</b> ${cameraAdvice(c.cameraInfo, c.house, c.areaM2, c.houseInput)}</div>` : ""}
+    ${extraWarn}
+  </div></div>`;
+      }
+
+      function tvChoices(tv) {
+        if (tv === "app") return [tvAddons.app];
+        if (tv === "box") return [tvAddons.box];
+        if (tv === "compare") return [tvAddons.app, tvAddons.box];
+        return [];
+      }
+
+      function renderTVAddons(c, internetPackage, forceSeparate = false) {
+        const box = document.getElementById("tvAddonResults");
+        box.innerHTML = "";
+        if (c.upgrade || c.tv === "none" || !internetPackage) return;
+        const separate = c.tvMode === "separate" || forceSeparate;
+        if (!separate) return;
+        const choices = tvChoices(c.tv);
+        if (!choices.length) return;
+        const cards = choices
+          .map((tv, i) => {
+            const combined = internetPackage.price + tv.addonPrice;
+            const script = `Anh/chị có thể chốt gói mạng ${internetPackage.name} trước với giá ${money(internetPackage.price)}/tháng. Sau đó nếu cần truyền hình, mình thêm ${tv.name} riêng, mức cộng tham chiếu ${money(tv.addonPrice)}/tháng theo chênh lệch các combo trong tài liệu. Tổng dự kiến mạng + TV là ${money(combined)}/tháng. ${tv.detail} Em sẽ kiểm tra lại chính sách TV360 tại thời điểm đăng ký trước khi chốt giá cuối cùng.`;
+            return `<article class="card tv-addon-card ${i === 0 ? "best" : ""}">
+      <div class="pkg">${tv.name}</div>
+      <div class="price">+${money(tv.addonPrice)} <small>/tháng</small></div>
+      <div class="meta"><span class="tag red">TV360 riêng</span><span class="tag">Sau khi chọn gói mạng</span></div>
+      <ul>
+        <li><b>Gói Internet đang ghép:</b> ${internetPackage.name} – ${money(internetPackage.price)}/tháng</li>
+        <li><b>Hình thức:</b> ${tv.equipment}</li>
+        <li><b>Phù hợp:</b> ${tv.detail}</li>
+      </ul>
+      <div class="total-line">Tổng dự kiến mạng + TV: ${money(combined)}/tháng</div>
+      <div class="script"><b>Cách nói với khách:</b> Chốt gói mạng trước, sau đó thêm ${tv.name} nếu khách có nhu cầu xem truyền hình.</div>
+      <div class="row-actions"><button class="mini primary" onclick='showScript(${JSON.stringify(script)})'>Xem lời tư vấn TV</button></div>
+    </article>`;
+          })
+          .join("");
+        box.innerHTML = `<div class="tv-addon-wrap"><div class="section-title"><h3>Gói TV360 tư vấn riêng sau khi chọn mạng</h3><span class="count">${choices.length} lựa chọn</span></div>
+    <div class="tv-addon-note"><b>Cách dùng:</b> trước tiên chốt gói Internet phù hợp nhất. Sau đó mới đưa phần TV360 ra như một lựa chọn riêng. Mức +20.000đ App / +40.000đ Box ở đây là mức tham chiếu suy ra từ chênh lệch combo trong tài liệu, nên cần kiểm tra chính sách bán hàng hiện hành trước khi cam kết với khách.</div>
+    <div class="cards">${cards}</div></div>`;
+      }
+
+      function recommend() {
+        const customerType = document.getElementById("customerType").value;
+        const useCaseInput = document.getElementById("useCase").value.trim();
+        const useCase = resolveUseCase(useCaseInput);
+        const ipRelevant = isOfficeOrBusinessUseCase(useCaseInput);
+        const ipNeed = ipRelevant
+          ? document.getElementById("ipNeed").value
+          : "no";
+        const houseInput = document.getElementById("houseType").value.trim();
+        const house = resolveHouse(houseInput);
+        const areaM2 = Math.max(
+          15,
+          Math.min(1000, Number(document.getElementById("areaM2").value || 60)),
+        );
+        document.getElementById("areaM2").value = areaM2;
+        const devices = Math.max(
+          1,
+          Number(document.getElementById("devices").value || 1),
+        );
+        const hasExistingCamera =
+          document.getElementById("existingCamera").value === "yes";
+        const wifiCameraCount = hasExistingCamera
+          ? Math.max(
+              0,
+              Number(document.getElementById("wifiCameraCount").value || 0),
+            )
+          : 0;
+        const analogCameraCount = hasExistingCamera
+          ? Math.max(
+              0,
+              Number(document.getElementById("analogCameraCount").value || 0),
+            )
+          : 0;
+        const cameraInfo = cameraLoadInfo(wifiCameraCount, analogCameraCount);
+        const effectiveDevices = devices + cameraInfo.networkLoad;
+        const area = document.getElementById("area").value;
+        const tv = document.getElementById("tvNeed").value;
+        const tvMode = document.getElementById("tvMode").value;
+        const camera = document.getElementById("cameraNeed").value;
+        const newCameraCount =
+          camera === "none"
+            ? 0
+            : Math.max(
+                1,
+                Number(document.getElementById("newCameraCount").value || 1),
+              );
+        const cloud = Number(document.getElementById("cloudDays").value);
+        const c = {
+          useCase,
+          useCaseInput,
+          ipRelevant,
+          ipNeed,
+          house,
+          houseInput,
+          areaM2,
+          devices,
+          effectiveDevices,
+          cameraInfo,
+          area,
+          tv,
+          tvMode,
+          camera,
+          newCameraCount,
+          cloud,
+          upgrade: customerType === "upgrade",
+        };
+        renderSummary(c);
+        const notice = document.getElementById("notice");
+        const results = document.getElementById("results");
+        document.getElementById("tvAddonResults").innerHTML = "";
+
+        if (customerType === "upgrade") {
+          notice.innerHTML =
+            analysisBox(c) +
+            '<div class="notice">Khách nâng cấp dùng bảng MeshEco / MeshPlus / MeshVip. Hệ thống dùng thêm diện tích m² để xếp ưu tiên Eco / Plus / Vip; bảng giá nâng cấp vẫn dựa trên mức cước cũ và không dùng giá H/T.</div>';
+          const old = document.getElementById("oldFee").value;
+          let idx =
+            old === "all"
+              ? 11
+              : upgradeLevels.findIndex((x) => x == Number(old));
+          if (idx < 0) idx = 11;
+          const need = estimateNetworkNeed(house, areaM2, houseInput);
+          const profile =
+            useCaseProfiles[resolveUseCase(useCase)] || useCaseProfiles.family;
+          let tier = profile.upgradeTier || "eco";
+          if (
+            need.meshNeeded > 2 ||
+            effectiveDevices > 25 ||
+            tier === "plus" ||
+            cameraInfo.wifiCams >= 4
+          )
+            tier = "plus";
+          if (
+            need.meshNeeded > 3 ||
+            effectiveDevices > 30 ||
+            house === "3-4" ||
+            profile.upgradeTier === "vip" ||
+            cameraInfo.wifiCams >= 8
+          )
+            tier = "vip";
+          const tiers =
+            tier === "eco"
+              ? ["eco", "plus"]
+              : tier === "plus"
+                ? ["plus", "vip", "eco"]
+                : ["vip", "plus"];
+          const pkgs = tiers.map((t) => upgradePackage(t, idx));
+          results.innerHTML = `<div class="section-title"><h3>Gói nâng cấp đề xuất</h3><span class="count">${pkgs.length} lựa chọn</span></div><div class="cards">${pkgs.map((p, i) => cardHTML(p, i === 0, c)).join("")}</div>`;
+          return;
+        }
+
+        let list = [];
+        // Luôn ưu tiên chọn phần mạng trước khi TV360 ở chế độ tách riêng.
+        // Nếu có Camera, giữ nhóm Internet + Camera làm gói nền; TV360 sẽ được tư vấn sau.
+        const profile =
+          useCaseProfiles[resolveUseCase(useCase)] || useCaseProfiles.family;
+        if (ipRelevant && (ipNeed === "yes" || ipNeed === "block")) {
+          // Văn phòng/công ty có nhu cầu IP tĩnh: chọn đường truyền VIP/F trước.
+          // Camera/TV nếu có sẽ tư vấn như dịch vụ bổ sung để không làm mất yêu cầu IP tĩnh.
+          list = businessPackages.filter(
+            (p) => (p.area === "B" || p.area === area) && p.segment === "ip",
+          );
+        } else if (camera !== "none") {
+          list = cameraPackages.filter((p) => p.area === area);
+        } else if (tv !== "none" && tvMode === "combo") {
+          list = tvPackages.filter(
+            (p) => p.area === area && (tv === "compare" || p.type === tv),
+          );
+        } else {
+          list = basePackages.filter((p) => p.area === area);
+          // Với quán/văn phòng/kinh doanh, thêm nhóm PRO/MESHPRO để có lựa chọn phù hợp hơn.
+          if (["business", "performance", "ip"].includes(profile.segment)) {
+            list = list.concat(
+              businessPackages.filter((p) => p.area === "B" || p.area === area),
+            );
+          }
+          // GIGA hiện trong bảng giá chỉ có khu vực nội thành HN/HCM.
+          if (
+            area === "H" &&
+            ["performance", "business"].includes(profile.segment)
+          ) {
+            list = list.concat(gigaPackages);
+          }
+          // Nhu cầu IP tĩnh: ưu tiên nhóm VIP/F, nhưng vẫn giữ vài gói khác để so sánh.
+          if (profile.segment === "ip") {
+            list = businessPackages
+              .filter(
+                (p) =>
+                  (p.area === "B" || p.area === area) && p.segment === "ip",
+              )
+              .concat(list);
+          }
+        }
+
+        list = list
+          .map((p) => ({
+            ...p,
+            _score:
+              scorePackage(
+                p,
+                house,
+                effectiveDevices,
+                areaM2,
+                useCase,
+                cameraInfo,
+                houseInput,
+              ) + ipPreferenceScore(p, ipNeed),
+          }))
+          .sort((a, b) => b._score - a._score || a.price - b.price);
+        const top = list.slice(0, 4);
+
+        let noticeHtml = "";
+        const useProfile =
+          useCaseProfiles[resolveUseCase(useCase)] || useCaseProfiles.family;
+        noticeHtml += `<div class="notice"><b>Mục đích sử dụng: ${useProfile.label}</b><br>${useProfile.note}</div>`;
+        if (ipRelevant) {
+          if (ipNeed === "unknown") {
+            noticeHtml += `<div class="notice ip-alert"><b>Cần hỏi khách trước khi chốt:</b> văn phòng/công ty có cần IP tĩnh, VPN, server hoặc truy cập hệ thống từ ngoài Internet không? Nếu có, nên chuyển sang nhóm VIP/F thay vì chỉ chọn PRO/MESHPRO.</div>`;
+          } else if (ipNeed === "yes" || ipNeed === "block") {
+            noticeHtml += `<div class="notice"><b>Đã bật nhu cầu IP tĩnh:</b> ${ipNeedText(ipNeed)}. Hệ thống tăng mạnh điểm ưu tiên cho nhóm VIP/F có IP tĩnh${ipNeed === "block" ? " và ưu tiên gói có Block IP /30" : ""}.</div>`;
+          } else {
+            noticeHtml += `<div class="notice"><b>Văn phòng không cần IP tĩnh:</b> ưu tiên PRO/MESHPRO hoặc gói Internet phù hợp về tốc độ và vùng phủ để tránh trả thêm cho tính năng IP không dùng tới.</div>`;
+          }
+        }
+        if (cameraInfo.totalCameras) {
+          noticeHtml += `<div class="notice"><b>Camera khách đang sử dụng:</b> ${cameraInfo.note}<br><b>Gợi ý:</b> ${cameraAdvice(cameraInfo, house, areaM2)}</div>`;
+        }
+        if (
+          ipRelevant &&
+          (ipNeed === "yes" || ipNeed === "block") &&
+          camera !== "none"
+        ) {
+          const cloudPrice = { 1: 20000, 7: 40000, 15: 60000, 30: 90000 }[
+            cloud
+          ];
+          noticeHtml += `<div class="notice"><b>Văn phòng cần IP tĩnh + Camera:</b> hệ thống đang ưu tiên chọn VIP/F trước để đáp ứng IP tĩnh. Camera sẽ tư vấn/báo riêng sau. Khách muốn lắp <b>${newCameraCount || 1} camera</b>; nếu dùng Cloud ${cloud} ngày thì mức tham chiếu Cloud là <b>${money(cloudPrice)}/camera/tháng</b>. Cần kiểm tra thiết bị Camera và phí lắp thực tế trước khi chốt.</div>`;
+        } else if (tv !== "none" && camera !== "none") {
+          const cloudPrice = { 1: 20000, 7: 40000, 15: 60000, 30: 90000 }[
+            cloud
+          ];
+          const cloudTotal = cloudPrice * (newCameraCount || 1);
+          noticeHtml += `<div class="notice"><b>Khách có cả TV360 + Camera Viettel:</b> hệ thống ưu tiên chọn gói Internet + Camera trước, sau đó tách TV360 thành phần tư vấn riêng vì tài liệu không có một mã combo duy nhất chứa cả 3 dịch vụ. Khách đang muốn lắp ${newCameraCount || 1} camera; Cloud ${cloud} ngày có mức tham chiếu <b>${money(cloudPrice)}/camera/tháng</b>, tương đương khoảng <b>${money(cloudTotal)}/tháng</b> nếu áp dụng cùng mức cho toàn bộ số camera. Với hơn 1 camera cần kiểm tra lại cấu hình gói và chi phí thiết bị thực tế.</div>`;
+        } else if (camera !== "none") {
+          noticeHtml += `<div class="notice"><b>Đang dùng bảng combo Camera theo ảnh mới bạn vừa gửi:</b> NETCB4/MESHCB4 có phí hòa mạng <b>300.000đ</b>; NETVT01/NETVT2/MESHVT1/MESHVT2/MESHVT3 có phí hòa mạng <b>500.000đ</b>. Mỗi combo trong ảnh gồm <b>01 Camera + Cloud 1 ngày</b>; khách được chọn camera trong/ngoài trời, miễn phí lắp Camera. Khách muốn lắp <b>${newCameraCount || 1} camera</b>; nếu nhiều hơn 1 camera hoặc muốn Cloud dài hơn 1 ngày thì cần cộng/kiểm tra chi phí bổ sung theo chính sách thực tế.</div>`;
+        } else if (tv !== "none" && tvMode === "separate") {
+          noticeHtml +=
+            '<div class="notice"><b>Đang tư vấn theo kiểu tách TV riêng:</b> hệ thống chọn gói Internet trước. Sau khi chọn được gói mạng, phần TV360 App/Box sẽ xuất hiện riêng bên dưới để bạn giải thích với khách.</div>';
+        } else if (tv !== "none") {
+          noticeHtml +=
+            '<div class="notice">Đang dùng các combo Internet + TV360 có trong tài liệu. TV360 App phù hợp Smart TV; TV360 Box phù hợp khách muốn đầu thu riêng.</div>';
+        }
+        const need = estimateNetworkNeed(house, areaM2, houseInput);
+        let coverageWarn = "";
+        if (need.meshNeeded > 3) {
+          coverageWarn =
+            '<div class="notice"><b>Diện tích/kiểu nhà đang khá lớn.</b> Hệ thống ước tính cần khoảng ' +
+            need.meshNeeded +
+            " Mesh ngoài modem. Các gói khách mới trong dữ liệu hiện tối đa 3 Node Mesh, vì vậy nên khảo sát thực tế hoặc bổ sung Mesh nếu cần.</div>";
+        }
+        notice.innerHTML = analysisBox(c) + coverageWarn + noticeHtml;
+
+        if (!top.length) {
+          results.innerHTML =
+            '<div class="empty">Không có gói nào trong tài liệu phù hợp bộ lọc này.</div>';
+          return;
+        }
+
+        results.innerHTML = `<div class="section-title"><h3>${tv !== "none" && tvMode === "separate" ? "Bước 1 – Chọn gói mạng phù hợp" : "Gói nên tư vấn"}</h3><span class="count">${top.length} lựa chọn</span></div><div class="cards">${top.map((p, i) => cardHTML(p, i === 0, c)).join("")}</div>${comparisonTable(top)}`;
+        // Nếu có Camera thì TV luôn tách riêng vì tài liệu không có combo 3-in-1.
+        renderTVAddons(c, top[0], camera !== "none" && tv !== "none");
+      }
+
+      function comparisonTable(pkgs) {
+        return `<div class="section-title"><h3>So sánh nhanh</h3></div><div class="compare"><table><thead><tr><th>Gói</th><th>Giá/tháng</th><th>Tốc độ</th><th>Mesh</th><th>Số thiết bị</th><th>Thiết bị/dịch vụ</th><th>IP tĩnh</th><th>Phí hòa mạng</th><th>Đánh giá vùng phủ</th></tr></thead><tbody>${pkgs.map((p) => `<tr><td><b>${p.name}</b></td><td>${money(p.price)}</td><td>${p.speed}</td><td>${p.mesh || 0}</td><td>${p.capacity ? p.capacity[0] + "–" + p.capacity[1] : "Không nêu"}</td><td>${p.equipment || p.range || "—"}</td><td>${p.ip || "Không"}</td><td>${p.setupFee != null ? money(p.setupFee) : "Chưa rõ"}</td><td>${(p.mesh || 0) >= estimateNetworkNeed(resolveHouse(document.getElementById("houseType").value), document.getElementById("areaM2").value, document.getElementById("houseType").value).meshNeeded ? "Đạt mức ước tính" : "Nên khảo sát / bổ sung Mesh"}</td></tr>`).join("")}</tbody></table></div>`;
+      }
+
+      window.showScript = function (text, title = "Lời tư vấn") {
+        document.getElementById("modalTitle").textContent = title;
+        document.getElementById("modalText").textContent = text;
+        document.getElementById("scriptModal").classList.add("show");
+      };
+      document.getElementById("closeModal").onclick = () =>
+        document.getElementById("scriptModal").classList.remove("show");
+      document.getElementById("scriptModal").onclick = (e) => {
+        if (e.target.id === "scriptModal")
+          e.currentTarget.classList.remove("show");
+      };
+      document.getElementById("copyScript").onclick = async () => {
+        await navigator.clipboard.writeText(
+          document.getElementById("modalText").textContent,
+        );
+        document.getElementById("copyScript").textContent = "Đã sao chép";
+        setTimeout(
+          () =>
+            (document.getElementById("copyScript").textContent =
+              "Sao chép lời tư vấn"),
+          1200,
+        );
+      };
+
+      function updateIpNeedVisibility() {
+        const customerType = document.getElementById("customerType").value;
+        const value = document.getElementById("useCase").value;
+        const relevant =
+          customerType === "new" && isOfficeOrBusinessUseCase(value);
+        document.getElementById("ipNeedWrap").style.display = relevant
+          ? "block"
+          : "none";
+        if (
+          relevant &&
+          resolveUseCase(value) === "business_ip" &&
+          document.getElementById("ipNeed").value === "no"
+        ) {
+          document.getElementById("ipNeed").value = "yes";
+        }
+      }
+
+      document
+        .getElementById("customerType")
+        .addEventListener("change", (e) => {
+          const up = e.target.value === "upgrade";
+          document.getElementById("oldFeeWrap").style.display = up
+            ? "block"
+            : "none";
+          document.getElementById("areaWrap").style.display = up
+            ? "none"
+            : "block";
+          document.getElementById("extraWrap").style.display = up
+            ? "none"
+            : "block";
+          document.getElementById("tvModeWrap").style.display = up
+            ? "none"
+            : document.getElementById("tvNeed").value === "none"
+              ? "none"
+              : "block";
+          document.getElementById("cameraWrap").style.display = up
+            ? "none"
+            : "block";
+          document.getElementById("newCameraCountWrap").style.display = "none";
+          document.getElementById("cloudWrap").style.display = "none";
+          updateIpNeedVisibility();
+        });
+      document
+        .getElementById("useCase")
+        .addEventListener("input", updateIpNeedVisibility);
+      document
+        .getElementById("useCase")
+        .addEventListener("change", updateIpNeedVisibility);
+      document.getElementById("useCase").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          recommend();
+        }
+      });
+      document.getElementById("houseType").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          recommend();
+        }
+      });
+      document.getElementById("tvNeed").addEventListener("change", (e) => {
+        document.getElementById("tvModeWrap").style.display =
+          e.target.value === "none" ? "none" : "block";
+      });
+      document
+        .getElementById("existingCamera")
+        .addEventListener("change", (e) => {
+          const show = e.target.value === "yes";
+          document.getElementById("existingCameraDetail").style.display = show
+            ? "block"
+            : "none";
+          if (!show) {
+            document.getElementById("wifiCameraCount").value = 0;
+            document.getElementById("analogCameraCount").value = 0;
+          }
+        });
+      document.getElementById("cameraNeed").addEventListener("change", (e) => {
+        const show = e.target.value !== "none";
+        document.getElementById("cloudWrap").style.display = show
+          ? "block"
+          : "none";
+        document.getElementById("newCameraCountWrap").style.display = show
+          ? "block"
+          : "none";
+      });
+      document.getElementById("recommendBtn").onclick = recommend;
+      document.getElementById("resetBtn").onclick = () => {
+        document.getElementById("customerType").value = "new";
+        document.getElementById("oldFeeWrap").style.display = "none";
+        document.getElementById("areaWrap").style.display = "block";
+        document.getElementById("extraWrap").style.display = "block";
+        document.getElementById("tvModeWrap").style.display = "none";
+        document.getElementById("cameraWrap").style.display = "block";
+        document.getElementById("cloudWrap").style.display = "none";
+        document.getElementById("useCase").value =
+          "Gia đình – sử dụng thông thường";
+        document.getElementById("ipNeed").value = "no";
+        document.getElementById("ipNeedWrap").style.display = "none";
+        document.getElementById("houseType").value = "Căn hộ 1 sàn / nhà nhỏ";
+        document.getElementById("areaM2").value = 60;
+        document.getElementById("devices").value = 12;
+        document.getElementById("existingCamera").value = "no";
+        document.getElementById("existingCameraDetail").style.display = "none";
+        document.getElementById("wifiCameraCount").value = 0;
+        document.getElementById("analogCameraCount").value = 0;
+        document.getElementById("area").value = "T";
+        document.getElementById("tvNeed").value = "none";
+        document.getElementById("tvMode").value = "separate";
+        document.getElementById("cameraNeed").value = "none";
+        document.getElementById("newCameraCount").value = 1;
+        document.getElementById("newCameraCountWrap").style.display = "none";
+        recommend();
+      };
+      updateIpNeedVisibility();
+      recommend();
+    </script>
+  </body>
+</html>
