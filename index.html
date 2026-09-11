@@ -1070,21 +1070,22 @@
         <div id="tvAddonResults"></div>
         <div class="footer-note">
           Lưu ý: số thiết bị chịu tải chỉ dùng khi tài liệu gốc có nêu. Thuật
-          toán V2 ưu tiên vùng phủ + tốc độ tối thiểu trước, sau đó mới xét giá;
-          vì vậy nhà lớn/nhiều tầng sẽ không còn bị đẩy lên đầu bằng gói 300
-          Mbps chỉ vì rẻ. Phí hòa mạng được tách riêng thành “chưa phí” và “có
-          phí”; gói Camera dùng mức 300.000đ/500.000đ theo ảnh bảng combo Camera
-          bạn cung cấp, các gói khác dùng mức 300.000đ theo phần phí hòa mạng
-          chung trong tài liệu và cần kiểm tra lại chính sách thực tế trước khi
-          chốt. Camera Wi‑Fi/IP được công cụ quy đổi là 1 thiết bị mạng/camera;
-          camera Analog được quy đổi khoảng 1 thiết bị mạng cho đầu ghi nếu đầu
-          ghi có kết nối Internet. Đây là ước tính hỗ trợ tư vấn, không phải
-          giới hạn chính thức của Viettel. Phần phân loại nhu cầu sử dụng, diện
-          tích m² và số vùng phủ/Mesh cũng là ước tính nội bộ. Mesh dùng để mở
-          rộng vùng phủ Wi‑Fi, không đồng nghĩa tự tăng tốc độ đường truyền
-          Internet. Với chế độ TV360 tách riêng, mức +20.000đ App / +40.000đ Box
-          là mức tham chiếu suy ra từ chênh lệch combo trong tài liệu, cần kiểm
-          tra chính sách thực tế trước khi chốt khách.
+          toán V3 tách tốc độ nền khỏi tốc độ tối đa, ước tính tải đồng thời
+          theo từng mục đích sử dụng và tính vùng phủ riêng cho từng tầng; sau
+          đó mới xét mức giá. Vì vậy cụm “tối đa 1 Gbps” không còn tự động được
+          coi là tốc độ nền 1.000 Mbps. Phí hòa mạng được tách riêng thành “chưa
+          phí” và “có phí”; gói Camera dùng mức 300.000đ/500.000đ theo ảnh bảng
+          combo Camera bạn cung cấp, các gói khác dùng mức 300.000đ theo phần
+          phí hòa mạng chung trong tài liệu và cần kiểm tra lại chính sách thực
+          tế trước khi chốt. Camera Wi‑Fi/IP được công cụ quy đổi là 1 thiết bị
+          mạng/camera; camera Analog được quy đổi khoảng 1 thiết bị mạng cho đầu
+          ghi nếu đầu ghi có kết nối Internet. Đây là ước tính hỗ trợ tư vấn,
+          không phải giới hạn chính thức của Viettel. Phần phân loại nhu cầu sử
+          dụng, diện tích m² và số vùng phủ/Mesh cũng là ước tính nội bộ. Mesh
+          dùng để mở rộng vùng phủ Wi‑Fi, không đồng nghĩa tự tăng tốc độ đường
+          truyền Internet. Với chế độ TV360 tách riêng, mức +20.000đ App /
+          +40.000đ Box là mức tham chiếu suy ra từ chênh lệch combo trong tài
+          liệu, cần kiểm tra chính sách thực tế trước khi chốt khách.
         </div>
       </section>
     </main>
@@ -1435,9 +1436,11 @@
         const raw = String(v || "").trim();
         return raw || useCaseProfiles.other.label;
       }
-      function speedValue(speed) {
-        // Chuẩn hóa tất cả về Mbps.
-        // Ví dụ: "500 Mbps – 1 Gbps" => 1000; "Tối đa 1 Gbps" => 1000.
+      function speedProfile(speed) {
+        // Tách tốc độ nền dùng để xét đạt chuẩn và tốc độ trần quảng bá.
+        // "500 Mbps – 1 Gbps" => nền 500, trần 1000.
+        // "Tối đa 1 Gbps" trong nhóm NETVT2/MESHVT2/MESHVT3 được xét thận trọng
+        // ở mức nền 500 Mbps, không tự coi là đường truyền nền 1.000 Mbps.
         const text = String(speed || "")
           .toLowerCase()
           .replace(",", ".");
@@ -1448,9 +1451,23 @@
           const value = Number(m[1]) * (m[2] === "gbps" ? 1000 : 1);
           if (Number.isFinite(value)) values.push(value);
         }
-        if (values.length) return Math.max(...values);
+        if (values.length) {
+          const peak = Math.max(...values);
+          let base = Math.min(...values);
+          if (values.length === 1 && text.includes("tối đa") && peak >= 1000)
+            base = 500;
+          return {
+            base,
+            peak,
+            variable: peak > base || text.includes("tối đa"),
+          };
+        }
         const nums = text.match(/\d+(?:\.\d+)?/g)?.map(Number) || [];
-        return nums.length ? Math.max(...nums) : 0;
+        const value = nums.length ? Math.max(...nums) : 0;
+        return { base: value, peak: value, variable: false };
+      }
+      function speedValue(speed) {
+        return speedProfile(speed).peak;
       }
 
       const basePackages = [
@@ -2316,7 +2333,7 @@
       }
 
       // Ước tính nội bộ phục vụ tư vấn, không phải thông số vùng phủ chính thức của Viettel.
-      // Quy tắc: 1 vùng phủ cho khoảng 80 m² sử dụng, đồng thời nhà nhiều tầng nên có ít nhất 1 vùng phủ/tầng.
+      // V3 tính theo từng sàn để tránh lấy tổng diện tích chia đều rồi bỏ sót tầng.
       function estimateNetworkNeed(house, areaM2, houseInput = "") {
         const houseKey = resolveHouse(house);
         const floors = getFloorEstimate(houseKey, houseInput);
@@ -2333,8 +2350,14 @@
           : inferredPerFloor;
 
         const totalArea = perFloor * floors;
-        const zonesByArea = Math.max(1, Math.ceil(totalArea / 80));
-        let zones = Math.max(floors, zonesByArea);
+        // Căn hộ thoáng dùng mốc 90 m²/vùng; nhà nhiều tầng 80 m²/vùng;
+        // không gian rộng/nhiều phòng dùng mốc thận trọng 70 m²/vùng.
+        const coveragePerZone = houseKey === "wide" ? 70 : floors > 1 ? 80 : 90;
+        const zonesPerFloor = Math.max(
+          1,
+          Math.ceil(perFloor / coveragePerZone),
+        );
+        let zones = zonesPerFloor * floors;
         if (houseKey === "wide")
           zones = Math.max(zones, Math.ceil(perFloor / 70));
         const meshNeeded = Math.max(0, zones - 1);
@@ -2352,6 +2375,8 @@
           perFloor,
           totalArea,
           zones,
+          zonesPerFloor,
+          coveragePerZone,
           meshNeeded,
           areaBand,
           areaProvided,
@@ -2410,6 +2435,33 @@
           : "Cấu hình camera chưa tạo tải lớn theo quy tắc ước tính của công cụ.";
       }
 
+      const trafficModels = {
+        family: { concurrency: 0.45, mbpsPerActive: 12, base: 25 },
+        family_heavy: { concurrency: 0.65, mbpsPerActive: 18, base: 35 },
+        cafe_small: { concurrency: 0.45, mbpsPerActive: 8, base: 40 },
+        cafe_large: { concurrency: 0.6, mbpsPerActive: 10, base: 70 },
+        office_small: { concurrency: 0.7, mbpsPerActive: 12, base: 55 },
+        office_medium: { concurrency: 0.8, mbpsPerActive: 14, base: 80 },
+        shop: { concurrency: 0.55, mbpsPerActive: 9, base: 45 },
+        restaurant: { concurrency: 0.55, mbpsPerActive: 9, base: 65 },
+        homestay: { concurrency: 0.6, mbpsPerActive: 12, base: 65 },
+        hotel: { concurrency: 0.7, mbpsPerActive: 14, base: 100 },
+        clinic_salon: { concurrency: 0.6, mbpsPerActive: 10, base: 50 },
+        education: { concurrency: 0.75, mbpsPerActive: 15, base: 80 },
+        warehouse: { concurrency: 0.5, mbpsPerActive: 8, base: 55 },
+        livestream: { concurrency: 0.7, mbpsPerActive: 22, base: 120 },
+        gaming: { concurrency: 0.85, mbpsPerActive: 20, base: 140 },
+        camera_heavy: { concurrency: 0.55, mbpsPerActive: 10, base: 70 },
+        business_ip: { concurrency: 0.75, mbpsPerActive: 14, base: 80 },
+        other: { concurrency: 0.5, mbpsPerActive: 12, base: 35 },
+      };
+      function roundSpeedTier(mbps) {
+        if (mbps <= 300) return 300;
+        if (mbps <= 500) return 500;
+        if (mbps <= 600) return 600;
+        return 1000;
+      }
+
       function deriveMinimumRequirement(
         house,
         devices,
@@ -2421,49 +2473,34 @@
       ) {
         const profile =
           useCaseProfiles[resolveUseCase(useCase)] || useCaseProfiles.family;
+        const useKey = resolveUseCase(useCase);
         const need = estimateNetworkNeed(house, areaM2, houseInput);
         const effectiveDevices = Math.max(0, Number(devices) || 0);
+        const otherDevices = Math.max(
+          0,
+          effectiveDevices - (cameraInfo.networkLoad || 0),
+        );
 
         // 1) Vùng phủ: đây là điều kiện quan trọng nhất với nhà rộng/nhiều tầng.
         let minMesh = Math.max(need.meshNeeded, profile.preferMesh || 0);
         if ((cameraInfo.wifiCams || 0) >= 4) minMesh = Math.max(minMesh, 1);
         if ((cameraInfo.wifiCams || 0) >= 8) minMesh = Math.max(minMesh, 2);
 
-        // 2) Tốc độ tối thiểu: không chỉ nhìn nhu cầu, mà tăng theo diện tích, tầng và số thiết bị.
-        let minSpeed = profile.minSpeed || 300;
-
-        // Nhà lớn / nhiều tầng không nên bị xếp vào gói 300 Mbps chỉ vì rẻ.
-        if (need.totalArea > 140 || need.floors >= 3 || effectiveDevices > 20)
-          minSpeed = Math.max(minSpeed, 500);
-
-        // Không gian rất lớn / rất nhiều thiết bị / nhóm kinh doanh vừa-lớn.
-        if (
-          need.totalArea > 300 ||
-          effectiveDevices > 35 ||
-          [
-            "office_medium",
-            "hotel",
-            "restaurant",
-            "education",
-            "cafe_large",
-          ].includes(resolveUseCase(useCase))
-        ) {
-          minSpeed = Math.max(minSpeed, 600);
-        }
-
-        // Nhu cầu rất cao: ưu tiên 1 Gbps nếu khu vực/gói có hỗ trợ.
-        if (
-          need.totalArea > 450 ||
-          effectiveDevices > 50 ||
-          ["gaming"].includes(resolveUseCase(useCase))
-        ) {
-          minSpeed = Math.max(minSpeed, 1000);
-        }
-
-        // Nhiều camera Wi‑Fi tạo thêm tải liên tục.
-        if ((cameraInfo.wifiCams || 0) >= 8) minSpeed = Math.max(minSpeed, 500);
-        if ((cameraInfo.wifiCams || 0) >= 16)
-          minSpeed = Math.max(minSpeed, 600);
+        // 2) Tốc độ: ước tính thiết bị hoạt động đồng thời, cộng tải camera và 30% dự phòng.
+        // Diện tích/tầng tác động đến Mesh; không tự làm tăng Mbps nếu số người dùng không đổi.
+        const load = trafficModels[useKey] || trafficModels.other;
+        const activeDevices = Math.max(
+          otherDevices ? 1 : 0,
+          Math.ceil(otherDevices * load.concurrency),
+        );
+        const cameraMbps =
+          (cameraInfo.wifiCams || 0) * 5 +
+          ((cameraInfo.analogCams || 0) > 0 ? 10 : 0);
+        const rawDemandMbps = Math.ceil(
+          (load.base + activeDevices * load.mbpsPerActive + cameraMbps) * 1.3,
+        );
+        const calculatedSpeed = roundSpeedTier(rawDemandMbps);
+        let minSpeed = Math.max(profile.minSpeed || 300, calculatedSpeed);
 
         // Nhà nội thành rất lớn có GIGA 1 Gbps trong dữ liệu: đưa vào nhóm cần cân nhắc.
         const shouldShowGiga =
@@ -2476,6 +2513,10 @@
         return {
           ...need,
           effectiveDevices,
+          otherDevices,
+          activeDevices,
+          rawDemandMbps,
+          calculatedSpeed,
           minMesh,
           minSpeed,
           shouldShowGiga,
@@ -2485,7 +2526,9 @@
       }
 
       function packageFit(p, req) {
-        const sp = speedValue(p.speed);
+        const advertised = speedProfile(p.speed);
+        const sp = advertised.base;
+        const peakSpeed = advertised.peak;
         const haveMesh = Number(p.mesh) || 0;
         const capacityMax = p.capacity ? p.capacity[1] : null;
 
@@ -2496,24 +2539,42 @@
             ? Math.max(0, req.effectiveDevices - capacityMax)
             : 0;
 
-        // Gói "đạt chuẩn" chỉ khi không hụt vùng phủ, tốc độ và số thiết bị (nếu tài liệu có nêu).
+        // Chỉ coi là đạt chắc khi tốc độ nền đủ. Nếu chỉ tốc độ trần đủ thì đánh dấu có điều kiện.
         const qualified =
           meshShort === 0 && speedShort === 0 && capacityShort === 0;
+        const conditional =
+          !qualified &&
+          meshShort === 0 &&
+          capacityShort === 0 &&
+          sp < req.minSpeed &&
+          peakSpeed >= req.minSpeed;
+        const fitRank = qualified ? 2 : conditional ? 1 : 0;
 
         // Mức thiếu càng cao thì rank càng xấu.
         const shortfall =
-          meshShort * 30 + Math.ceil(speedShort / 100) * 5 + capacityShort * 3;
+          meshShort * 30 +
+          Math.ceil(speedShort / 100) * (conditional ? 2 : 5) +
+          capacityShort * 3;
 
         return {
           qualified,
+          conditional,
+          fitRank,
           meshShort,
           speedShort,
           capacityShort,
           shortfall,
           sp,
+          peakSpeed,
+          variableSpeed: advertised.variable,
           haveMesh,
           capacityMax,
         };
+      }
+      function fitStatusText(fit) {
+        if (fit.qualified) return "✓ Đủ ngưỡng đề xuất";
+        if (fit.conditional) return "◐ Đạt theo tốc độ tối đa";
+        return "⚠ Chưa đủ ngưỡng";
       }
 
       function scorePackage(
@@ -2542,6 +2603,7 @@
 
         // Ưu tiên rất mạnh gói đạt ngưỡng tối thiểu.
         if (fit.qualified) s += 100;
+        else if (fit.conditional) s += 62;
         else s -= fit.shortfall;
 
         // Phù hợp kiểu nhà.
@@ -2574,14 +2636,10 @@
         const sp = fit.sp;
         if (sp >= req.minSpeed) {
           s += 18;
-          if (
-            sp >= 1000 &&
-            (req.minSpeed >= 600 ||
-              req.totalArea >= 220 ||
-              req.effectiveDevices >= 30)
-          )
-            s += 8;
-          else if (sp >= req.minSpeed * 1.5) s += 4;
+          if (sp >= 1000 && req.minSpeed >= 600) s += 8;
+          else if (sp >= req.minSpeed * 1.5) s += 2;
+        } else if (fit.conditional) {
+          s += 7; // Có thể đạt theo tốc độ trần nhưng cần kiểm tra hạ tầng/chính sách tại địa chỉ.
         } else {
           s -= Math.min(50, Math.ceil((req.minSpeed - sp) / 100) * 8);
         }
@@ -2751,7 +2809,7 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
         context.area,
       );
       const fit = packageFit(p, req);
-      return `<div class="meta"><span class="tag red">${p.speed}</span><span class="tag">${meshText}</span><span class="tag">${capacity}</span><span class="tag ${fit.qualified ? "" : "red"}">${fit.qualified ? "✓ Đủ ngưỡng đề xuất" : "⚠ Chưa đủ ngưỡng"}</span></div>`;
+      return `<div class="meta"><span class="tag red">${p.speed}</span><span class="tag">${meshText}</span><span class="tag">${capacity}</span><span class="tag ${fit.qualified ? "" : "red"}">${fitStatusText(fit)}</span></div>`;
     })()}
     <ul>
       <li><b>Thiết bị/dịch vụ:</b> ${p.equipment || p.range || "Theo bảng gói"}</li>
@@ -2800,9 +2858,12 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
           : `chưa nhập m², hệ thống đang ước tính theo kiểu nhà`;
         const threshold = `Ngưỡng nên đạt: ≥${req.minSpeed} Mbps và khoảng ${req.minMesh} Mesh`;
         const status = fit.qualified
-          ? "ĐẠT ngưỡng tối thiểu"
-          : "CHƯA ĐẠT đủ ngưỡng tối thiểu";
-        return `Nhu cầu ${useCaseText(c.useCaseInput || c.useCase).toLowerCase()}; khách ở ${houseText(c.house, c.houseInput).toLowerCase()}, ${areaTextShort}.${camText} ${threshold}. Gói này ${mesh}, ${cap}; ${coverage}. Đánh giá: ${status}.`;
+          ? "ĐẠT ngưỡng theo tốc độ nền"
+          : fit.conditional
+            ? "CÓ THỂ ĐẠT theo tốc độ tối đa, cần kiểm tra tại địa chỉ"
+            : "CHƯA ĐẠT đủ ngưỡng tối thiểu";
+        const demand = `Tải đồng thời ước tính ${req.activeDevices}/${req.otherDevices} thiết bị, nhu cầu khoảng ${req.rawDemandMbps} Mbps`;
+        return `Nhu cầu ${useCaseText(c.useCaseInput || c.useCase).toLowerCase()}; khách ở ${houseText(c.house, c.houseInput).toLowerCase()}, ${areaTextShort}.${camText} ${demand}. ${threshold}. Gói này ${mesh}, ${cap}; ${coverage}. Đánh giá: ${status}.`;
       }
 
       function buildScript(p, c) {
@@ -2880,7 +2941,16 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
       }
 
       function analysisBox(c) {
-        const n = estimateNetworkNeed(c.house, c.areaM2);
+        const n = estimateNetworkNeed(c.house, c.areaM2, c.houseInput);
+        const req = deriveMinimumRequirement(
+          c.house,
+          c.effectiveDevices,
+          c.areaM2,
+          c.useCase,
+          c.cameraInfo,
+          c.houseInput,
+          c.area,
+        );
         const extraWarn =
           n.meshNeeded > 3 && !c.upgrade
             ? `<div class="ai-chip warn-chip"><b>Cần lưu ý:</b> ước tính cần hơn 3 Mesh. Bảng khách mới hiện cao nhất là MESHVT3 (3 Node Mesh), nên khảo sát thực tế hoặc tính phương án bổ sung Mesh.</div>`
@@ -2902,6 +2972,8 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
     <div class="ai-chip"><b>Camera Wi‑Fi/IP:</b> ${c.cameraInfo.wifiCams}</div>
     <div class="ai-chip"><b>Camera Analog:</b> ${c.cameraInfo.analogCams}</div>
     <div class="ai-chip"><b>Tải mạng quy đổi:</b> ~${c.effectiveDevices} thiết bị</div>
+    <div class="ai-chip"><b>Thiết bị hoạt động đồng thời:</b> ~${req.activeDevices}/${req.otherDevices} thiết bị khác</div>
+    <div class="ai-chip"><b>Băng thông tính toán + dự phòng:</b> ~${req.rawDemandMbps} Mbps → chọn ngưỡng ${req.minSpeed} Mbps</div>
     ${c.cameraInfo.totalCameras ? `<div class="ai-chip"><b>Tư vấn camera:</b> ${cameraAdvice(c.cameraInfo, c.house, c.areaM2, c.houseInput)}</div>` : ""}
     ${extraWarn}
   </div></div>`;
@@ -3148,9 +3220,9 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
             };
           })
           .sort((a, b) => {
-            // 1. Gói đạt ngưỡng tối thiểu đứng trước.
-            if (a._fit.qualified !== b._fit.qualified)
-              return a._fit.qualified ? -1 : 1;
+            // 1. Đạt theo tốc độ nền > chỉ đạt theo tốc độ tối đa > chưa đạt.
+            if (a._fit.fitRank !== b._fit.fitRank)
+              return b._fit.fitRank - a._fit.fitRank;
             // 2. Nếu đều chưa đạt, gói thiếu ít hơn đứng trước.
             if (a._fit.shortfall !== b._fit.shortfall)
               return a._fit.shortfall - b._fit.shortfall;
@@ -3161,7 +3233,10 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
           });
 
         const qualified = list.filter((p) => p._fit.qualified);
-        const top = (qualified.length ? qualified : list).slice(0, 4);
+        const conditional = list.filter((p) => p._fit.conditional);
+        const top = (
+          qualified.length ? qualified : conditional.length ? conditional : list
+        ).slice(0, 4);
 
         let noticeHtml = "";
         const useProfile =
@@ -3204,8 +3279,13 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
             '<div class="notice">Đang dùng các combo Internet + TV360 có trong tài liệu. TV360 App phù hợp Smart TV; TV360 Box phù hợp khách muốn đầu thu riêng.</div>';
         }
         const need = estimateNetworkNeed(house, areaM2, houseInput);
-        let coverageWarn = `<div class="notice"><b>Ngưỡng hệ thống đang dùng để chọn gói:</b> tối thiểu <b>${req.minSpeed} Mbps</b> và khoảng <b>${req.minMesh} Mesh</b> cho cấu hình khách này. Giá rẻ chỉ được dùng để phân hạng khi các gói đã đạt mức kỹ thuật tương đương.</div>`;
-        if (!list.some((p) => p._fit?.qualified)) {
+        let coverageWarn = `<div class="notice"><b>Thuật toán V3 đang dùng:</b> khoảng <b>${req.activeDevices}/${req.otherDevices} thiết bị</b> hoạt động đồng thời, tải có dự phòng khoảng <b>${req.rawDemandMbps} Mbps</b>; ngưỡng chọn gói tối thiểu <b>${req.minSpeed} Mbps</b> và khoảng <b>${req.minMesh} Mesh</b>. Giá chỉ được xét sau mức phù hợp kỹ thuật.</div>`;
+        if (
+          !list.some((p) => p._fit?.qualified) &&
+          list.some((p) => p._fit?.conditional)
+        ) {
+          coverageWarn += `<div class="notice ip-alert"><b>Chỉ đạt theo tốc độ tối đa:</b> các gói đứng đầu có tốc độ nền thấp hơn ngưỡng, nhưng tốc độ trần có thể đáp ứng. Cần kiểm tra hạ tầng XGS-PON/chính sách và tốc độ thực tế tại địa chỉ trước khi chốt.</div>`;
+        } else if (!list.some((p) => p._fit?.qualified)) {
           coverageWarn += `<div class="notice ip-alert"><b>Không có gói nào trong dữ liệu đạt toàn bộ ngưỡng ước tính.</b> Hệ thống đang hiển thị các gói thiếu ít nhất để tham khảo; nên khảo sát thực tế/bổ sung Mesh hoặc chọn phương án cao hơn nếu có.</div>`;
         }
         if (need.meshNeeded > 3) {
@@ -3266,9 +3346,12 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
                   houseRaw,
                   document.getElementById("area").value,
                 );
-                return packageFit(p, r).qualified
-                  ? "Đạt ngưỡng đề xuất"
-                  : "Chưa đạt đủ tốc độ/vùng phủ";
+                const fit = packageFit(p, r);
+                return fit.qualified
+                  ? "Đạt theo tốc độ nền"
+                  : fit.conditional
+                    ? "Có thể đạt theo tốc độ tối đa"
+                    : "Chưa đạt đủ tốc độ/vùng phủ";
               })()}</td></tr>`,
           )
           .join("")}</tbody></table></div>`;
