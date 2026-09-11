@@ -913,9 +913,10 @@
             value="60"
           />
           <div class="hint">
-            Nhập diện tích một sàn. Với căn hộ 1 sàn, nhập toàn bộ diện tích căn
-            hộ. Hệ thống dùng số này cùng số tầng để ước tính số vùng phủ/Mesh
-            cần thiết.
+            Có thể để trống nếu khách không biết m². Nếu có số liệu, nhập diện
+            tích một sàn; với căn hộ 1 sàn, nhập toàn bộ diện tích căn hộ. Khi
+            để trống, hệ thống sẽ ước tính theo kiểu nhà/số tầng và ghi rõ đó là
+            ước tính.
           </div>
         </div>
 
@@ -987,6 +988,7 @@
           <select id="area">
             <option value="T">Ngoại thành HN/HCM hoặc 32 tỉnh khác</option>
             <option value="H">Nội thành Hà Nội / TP.HCM</option>
+            <option value="">-- Chưa chọn khu vực --</option>
           </select>
         </div>
 
@@ -1067,20 +1069,22 @@
         <div id="results"></div>
         <div id="tvAddonResults"></div>
         <div class="footer-note">
-          Lưu ý: số thiết bị chịu tải chỉ dùng khi tài liệu gốc có nêu. Phí hòa
-          mạng được tách riêng thành “chưa phí” và “có phí”; gói Camera dùng mức
-          300.000đ/500.000đ theo ảnh bảng combo Camera bạn cung cấp, các gói
-          khác dùng mức 300.000đ theo phần phí hòa mạng chung trong tài liệu và
-          cần kiểm tra lại chính sách thực tế trước khi chốt. Camera Wi‑Fi/IP
-          được công cụ quy đổi là 1 thiết bị mạng/camera; camera Analog được quy
-          đổi khoảng 1 thiết bị mạng cho đầu ghi nếu đầu ghi có kết nối
-          Internet. Đây là ước tính hỗ trợ tư vấn, không phải giới hạn chính
-          thức của Viettel. Phần phân loại nhu cầu sử dụng, diện tích m² và số
-          vùng phủ/Mesh cũng là ước tính nội bộ. Mesh dùng để mở rộng vùng phủ
-          Wi‑Fi, không đồng nghĩa tự tăng tốc độ đường truyền Internet. Với chế
-          độ TV360 tách riêng, mức +20.000đ App / +40.000đ Box là mức tham chiếu
-          suy ra từ chênh lệch combo trong tài liệu, cần kiểm tra chính sách
-          thực tế trước khi chốt khách.
+          Lưu ý: số thiết bị chịu tải chỉ dùng khi tài liệu gốc có nêu. Thuật
+          toán V2 ưu tiên vùng phủ + tốc độ tối thiểu trước, sau đó mới xét giá;
+          vì vậy nhà lớn/nhiều tầng sẽ không còn bị đẩy lên đầu bằng gói 300
+          Mbps chỉ vì rẻ. Phí hòa mạng được tách riêng thành “chưa phí” và “có
+          phí”; gói Camera dùng mức 300.000đ/500.000đ theo ảnh bảng combo Camera
+          bạn cung cấp, các gói khác dùng mức 300.000đ theo phần phí hòa mạng
+          chung trong tài liệu và cần kiểm tra lại chính sách thực tế trước khi
+          chốt. Camera Wi‑Fi/IP được công cụ quy đổi là 1 thiết bị mạng/camera;
+          camera Analog được quy đổi khoảng 1 thiết bị mạng cho đầu ghi nếu đầu
+          ghi có kết nối Internet. Đây là ước tính hỗ trợ tư vấn, không phải
+          giới hạn chính thức của Viettel. Phần phân loại nhu cầu sử dụng, diện
+          tích m² và số vùng phủ/Mesh cũng là ước tính nội bộ. Mesh dùng để mở
+          rộng vùng phủ Wi‑Fi, không đồng nghĩa tự tăng tốc độ đường truyền
+          Internet. Với chế độ TV360 tách riêng, mức +20.000đ App / +40.000đ Box
+          là mức tham chiếu suy ra từ chênh lệch combo trong tài liệu, cần kiểm
+          tra chính sách thực tế trước khi chốt khách.
         </div>
       </section>
     </main>
@@ -1432,10 +1436,20 @@
         return raw || useCaseProfiles.other.label;
       }
       function speedValue(speed) {
-        const nums =
-          String(speed || "")
-            .match(/\d+/g)
-            ?.map(Number) || [];
+        // Chuẩn hóa tất cả về Mbps.
+        // Ví dụ: "500 Mbps – 1 Gbps" => 1000; "Tối đa 1 Gbps" => 1000.
+        const text = String(speed || "")
+          .toLowerCase()
+          .replace(",", ".");
+        const values = [];
+        const re = /(\d+(?:\.\d+)?)\s*(gbps|mbps)/g;
+        let m;
+        while ((m = re.exec(text)) !== null) {
+          const value = Number(m[1]) * (m[2] === "gbps" ? 1000 : 1);
+          if (Number.isFinite(value)) values.push(value);
+        }
+        if (values.length) return Math.max(...values);
+        const nums = text.match(/\d+(?:\.\d+)?/g)?.map(Number) || [];
         return nums.length ? Math.max(...nums) : 0;
       }
 
@@ -2254,6 +2268,13 @@
         if (!t) return "apartment";
         const floors = extractFloorCount(v);
         if (
+          (t.includes("chung cu") || t.includes("can ho")) &&
+          (t.includes("rong") ||
+            t.includes("penthouse") ||
+            t.includes("duplex"))
+        )
+          return "wide";
+        if (
           t.includes("chung cu") ||
           t.includes("can ho") ||
           t.includes("cap 4") ||
@@ -2299,7 +2320,18 @@
       function estimateNetworkNeed(house, areaM2, houseInput = "") {
         const houseKey = resolveHouse(house);
         const floors = getFloorEstimate(houseKey, houseInput);
-        const perFloor = Math.max(15, Number(areaM2) || 60);
+
+        // m² là tùy chọn. Nếu khách không biết diện tích, hệ thống ước tính nội bộ
+        // từ kiểu nhà để vẫn có thể tư vấn, nhưng sẽ ghi rõ đây là ước tính.
+        const rawArea = Number(areaM2);
+        const areaProvided = Number.isFinite(rawArea) && rawArea >= 15;
+        let inferredPerFloor = 60;
+        if (houseKey === "apartment") inferredPerFloor = 70;
+        if (houseKey === "wide") inferredPerFloor = 180;
+        const perFloor = areaProvided
+          ? Math.max(15, Math.min(1000, rawArea))
+          : inferredPerFloor;
+
         const totalArea = perFloor * floors;
         const zonesByArea = Math.max(1, Math.ceil(totalArea / 80));
         let zones = Math.max(floors, zonesByArea);
@@ -2322,6 +2354,7 @@
           zones,
           meshNeeded,
           areaBand,
+          areaProvided,
         };
       }
 
@@ -2377,6 +2410,112 @@
           : "Cấu hình camera chưa tạo tải lớn theo quy tắc ước tính của công cụ.";
       }
 
+      function deriveMinimumRequirement(
+        house,
+        devices,
+        areaM2,
+        useCase = "family",
+        cameraInfo = { wifiCams: 0, analogCams: 0, totalCameras: 0 },
+        houseInput = "",
+        area = "T",
+      ) {
+        const profile =
+          useCaseProfiles[resolveUseCase(useCase)] || useCaseProfiles.family;
+        const need = estimateNetworkNeed(house, areaM2, houseInput);
+        const effectiveDevices = Math.max(0, Number(devices) || 0);
+
+        // 1) Vùng phủ: đây là điều kiện quan trọng nhất với nhà rộng/nhiều tầng.
+        let minMesh = Math.max(need.meshNeeded, profile.preferMesh || 0);
+        if ((cameraInfo.wifiCams || 0) >= 4) minMesh = Math.max(minMesh, 1);
+        if ((cameraInfo.wifiCams || 0) >= 8) minMesh = Math.max(minMesh, 2);
+
+        // 2) Tốc độ tối thiểu: không chỉ nhìn nhu cầu, mà tăng theo diện tích, tầng và số thiết bị.
+        let minSpeed = profile.minSpeed || 300;
+
+        // Nhà lớn / nhiều tầng không nên bị xếp vào gói 300 Mbps chỉ vì rẻ.
+        if (need.totalArea > 140 || need.floors >= 3 || effectiveDevices > 20)
+          minSpeed = Math.max(minSpeed, 500);
+
+        // Không gian rất lớn / rất nhiều thiết bị / nhóm kinh doanh vừa-lớn.
+        if (
+          need.totalArea > 300 ||
+          effectiveDevices > 35 ||
+          [
+            "office_medium",
+            "hotel",
+            "restaurant",
+            "education",
+            "cafe_large",
+          ].includes(resolveUseCase(useCase))
+        ) {
+          minSpeed = Math.max(minSpeed, 600);
+        }
+
+        // Nhu cầu rất cao: ưu tiên 1 Gbps nếu khu vực/gói có hỗ trợ.
+        if (
+          need.totalArea > 450 ||
+          effectiveDevices > 50 ||
+          ["gaming"].includes(resolveUseCase(useCase))
+        ) {
+          minSpeed = Math.max(minSpeed, 1000);
+        }
+
+        // Nhiều camera Wi‑Fi tạo thêm tải liên tục.
+        if ((cameraInfo.wifiCams || 0) >= 8) minSpeed = Math.max(minSpeed, 500);
+        if ((cameraInfo.wifiCams || 0) >= 16)
+          minSpeed = Math.max(minSpeed, 600);
+
+        // Nhà nội thành rất lớn có GIGA 1 Gbps trong dữ liệu: đưa vào nhóm cần cân nhắc.
+        const shouldShowGiga =
+          area === "H" &&
+          (minSpeed >= 1000 ||
+            need.totalArea >= 220 ||
+            minMesh >= 2 ||
+            effectiveDevices >= 30);
+
+        return {
+          ...need,
+          effectiveDevices,
+          minMesh,
+          minSpeed,
+          shouldShowGiga,
+          maxMeshInHomeData: 3,
+          coverageBeyondCatalog: minMesh > 3,
+        };
+      }
+
+      function packageFit(p, req) {
+        const sp = speedValue(p.speed);
+        const haveMesh = Number(p.mesh) || 0;
+        const capacityMax = p.capacity ? p.capacity[1] : null;
+
+        const meshShort = Math.max(0, req.minMesh - haveMesh);
+        const speedShort = Math.max(0, req.minSpeed - sp);
+        const capacityShort =
+          capacityMax !== null
+            ? Math.max(0, req.effectiveDevices - capacityMax)
+            : 0;
+
+        // Gói "đạt chuẩn" chỉ khi không hụt vùng phủ, tốc độ và số thiết bị (nếu tài liệu có nêu).
+        const qualified =
+          meshShort === 0 && speedShort === 0 && capacityShort === 0;
+
+        // Mức thiếu càng cao thì rank càng xấu.
+        const shortfall =
+          meshShort * 30 + Math.ceil(speedShort / 100) * 5 + capacityShort * 3;
+
+        return {
+          qualified,
+          meshShort,
+          speedShort,
+          capacityShort,
+          shortfall,
+          sp,
+          haveMesh,
+          capacityMax,
+        };
+      }
+
       function scorePackage(
         p,
         house,
@@ -2385,46 +2524,92 @@
         useCase = "family",
         cameraInfo = { wifiCams: 0, analogCams: 0, totalCameras: 0 },
         houseInput = "",
+        area = "T",
       ) {
         let s = 0;
         const profile =
           useCaseProfiles[resolveUseCase(useCase)] || useCaseProfiles.family;
-        if (p.house?.includes(house)) s += 5;
-        if (p.capacity) {
-          if (devices <= p.capacity[1]) s += 4;
-          else s -= 5;
-          if (devices >= p.capacity[0] - 3 && devices <= p.capacity[1]) s += 2;
-        } else s += 1;
-        const need = estimateNetworkNeed(house, areaM2, houseInput);
-        const have = p.mesh || 0;
-        const cameraMeshBoost = (cameraInfo.wifiCams || 0) >= 4 ? 1 : 0;
-        const wantedMesh = Math.max(
-          need.meshNeeded,
-          profile.preferMesh || 0,
-          cameraMeshBoost,
+        const req = deriveMinimumRequirement(
+          house,
+          devices,
+          areaM2,
+          useCase,
+          cameraInfo,
+          houseInput,
+          area,
         );
-        if (have >= wantedMesh) s += 5 - Math.min(3, have - wantedMesh);
-        else s -= Math.min(10, (wantedMesh - have) * 4);
-        if (need.areaBand === "rất rộng" && have >= 2) s += 1.5;
-        const sp = speedValue(p.speed);
-        const cameraMinSpeed = (cameraInfo.wifiCams || 0) >= 8 ? 500 : 0;
-        const wantedSpeed = Math.max(profile.minSpeed, cameraMinSpeed);
-        if (sp >= wantedSpeed) s += 4;
-        else s -= Math.min(8, Math.ceil((wantedSpeed - sp) / 200) * 2);
-        if ((cameraInfo.wifiCams || 0) >= 4 && (p.mesh || 0) > 0) s += 1;
-        if (profile.segment === "business") {
-          if (p.segment === "business") s += 4;
-          if (p.segment === "ip") s -= 1;
-        } else if (profile.segment === "performance") {
-          if (p.segment === "performance" || sp >= 1000) s += 5;
-        } else if (profile.segment === "ip") {
-          if (p.segment === "ip" || (p.ip && p.ip !== "Không")) s += 12;
-          else s -= 10;
-        } else if (profile.segment === "camera") {
-          if (p.app || String(p.name).includes("CAM")) s += 6;
+        const fit = packageFit(p, req);
+
+        // Ưu tiên rất mạnh gói đạt ngưỡng tối thiểu.
+        if (fit.qualified) s += 100;
+        else s -= fit.shortfall;
+
+        // Phù hợp kiểu nhà.
+        if (p.house?.includes(req.houseKey)) s += 8;
+        else if ((p.mesh || 0) >= req.minMesh) s += 2;
+
+        // Số thiết bị.
+        if (p.capacity) {
+          if (devices <= p.capacity[1]) s += 8;
+          if (devices >= p.capacity[0] - 3 && devices <= p.capacity[1]) s += 3;
+          if (devices > p.capacity[1])
+            s -= Math.min(30, (devices - p.capacity[1]) * 4);
         } else {
-          if (!p.segment || p.segment === "home") s += 2;
+          // Không tự coi "không nêu" là yếu, nhưng cũng không cộng nhiều điểm.
+          s += 1;
         }
+
+        // Vùng phủ: dư 0–1 Mesh là hợp lý; thiếu Mesh bị phạt rất nặng.
+        const have = p.mesh || 0;
+        if (have >= req.minMesh) {
+          s += 18;
+          if (have === req.minMesh)
+            s += 5; // vừa đủ, cân bằng chi phí
+          else if (have === req.minMesh + 1) s += 3; // có dự phòng nhẹ
+        } else {
+          s -= Math.min(60, (req.minMesh - have) * 20);
+        }
+
+        // Tốc độ: đạt ngưỡng là bắt buộc; có headroom được cộng thêm.
+        const sp = fit.sp;
+        if (sp >= req.minSpeed) {
+          s += 18;
+          if (
+            sp >= 1000 &&
+            (req.minSpeed >= 600 ||
+              req.totalArea >= 220 ||
+              req.effectiveDevices >= 30)
+          )
+            s += 8;
+          else if (sp >= req.minSpeed * 1.5) s += 4;
+        } else {
+          s -= Math.min(50, Math.ceil((req.minSpeed - sp) / 100) * 8);
+        }
+
+        // Camera Wi‑Fi ưu tiên Mesh.
+        if ((cameraInfo.wifiCams || 0) >= 4 && have > 0) s += 4;
+
+        // Đúng phân khúc sử dụng.
+        if (profile.segment === "business") {
+          if (p.segment === "business") s += 14;
+          if (p.segment === "ip") s -= 4;
+        } else if (profile.segment === "performance") {
+          if (p.segment === "performance" || sp >= 1000) s += 14;
+        } else if (profile.segment === "ip") {
+          if (p.segment === "ip" || (p.ip && p.ip !== "Không")) s += 25;
+          else s -= 25;
+        } else if (profile.segment === "camera") {
+          if (
+            p.cameraPromo ||
+            p.app ||
+            String(p.name).includes("CAM") ||
+            String(p.name).includes("CB4")
+          )
+            s += 12;
+        } else {
+          if (!p.segment || p.segment === "home") s += 6;
+        }
+
         return s;
       }
 
@@ -2555,7 +2740,19 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
         return `<article class="card ${best ? "best" : ""}">
     <div class="pkg">${p.name}</div>
     <div class="price">${money(p.price)} <small>/tháng</small></div>
-    <div class="meta"><span class="tag red">${p.speed}</span><span class="tag">${meshText}</span><span class="tag">${capacity}</span></div>
+    ${(() => {
+      const req = deriveMinimumRequirement(
+        context.house,
+        context.effectiveDevices,
+        context.areaM2,
+        context.useCase,
+        context.cameraInfo,
+        context.houseInput,
+        context.area,
+      );
+      const fit = packageFit(p, req);
+      return `<div class="meta"><span class="tag red">${p.speed}</span><span class="tag">${meshText}</span><span class="tag">${capacity}</span><span class="tag ${fit.qualified ? "" : "red"}">${fit.qualified ? "✓ Đủ ngưỡng đề xuất" : "⚠ Chưa đủ ngưỡng"}</span></div>`;
+    })()}
     <ul>
       <li><b>Thiết bị/dịch vụ:</b> ${p.equipment || p.range || "Theo bảng gói"}</li>
       ${p.gift && p.gift !== "—" ? `<li><b>Quà tặng:</b> ${p.gift}</li>` : ""}
@@ -2575,6 +2772,16 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
 
       function shortReason(p, c) {
         const need = estimateNetworkNeed(c.house, c.areaM2, c.houseInput);
+        const req = deriveMinimumRequirement(
+          c.house,
+          c.effectiveDevices,
+          c.areaM2,
+          c.useCase,
+          c.cameraInfo,
+          c.houseInput,
+          c.area,
+        );
+        const fit = packageFit(p, req);
         const mesh = p.mesh
           ? `có ${p.mesh} Mesh giúp mở rộng vùng phủ`
           : "không kèm Mesh";
@@ -2588,7 +2795,14 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
         const camText = c.cameraInfo?.totalCameras
           ? ` Có ${c.cameraInfo.wifiCams} camera Wi‑Fi/IP và ${c.cameraInfo.analogCams} camera Analog; tải mạng quy đổi khoảng ${c.effectiveDevices} thiết bị.`
           : ` Có khoảng ${c.devices} thiết bị khác và không có camera đang dùng.`;
-        return `Nhu cầu ${useCaseText(c.useCaseInput || c.useCase).toLowerCase()}; khách ở ${houseText(c.house, c.houseInput).toLowerCase()}, khoảng ${c.areaM2} m²/sàn.${camText} Gói này ${mesh}, ${cap}; ${coverage}.`;
+        const areaTextShort = need.areaProvided
+          ? `khoảng ${need.perFloor} m²/sàn`
+          : `chưa nhập m², hệ thống đang ước tính theo kiểu nhà`;
+        const threshold = `Ngưỡng nên đạt: ≥${req.minSpeed} Mbps và khoảng ${req.minMesh} Mesh`;
+        const status = fit.qualified
+          ? "ĐẠT ngưỡng tối thiểu"
+          : "CHƯA ĐẠT đủ ngưỡng tối thiểu";
+        return `Nhu cầu ${useCaseText(c.useCaseInput || c.useCase).toLowerCase()}; khách ở ${houseText(c.house, c.houseInput).toLowerCase()}, ${areaTextShort}.${camText} ${threshold}. Gói này ${mesh}, ${cap}; ${coverage}. Đánh giá: ${status}.`;
       }
 
       function buildScript(p, c) {
@@ -2643,7 +2857,10 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
         const ipText = c.ipRelevant
           ? ` Nhu cầu IP của khách: ${ipNeedText(c.ipNeed)}.${p.ip ? ` Gói này: ${p.ip}.` : ""}`
           : "";
-        return `Anh/chị đang dùng cho nhu cầu ${useCaseText(c.useCaseInput || c.useCase).toLowerCase()}, tại ${houseText(c.house, c.houseInput).toLowerCase()}, diện tích khoảng ${c.areaM2} m²/sàn, ước tính tổng diện tích sử dụng khoảng ${need.totalArea} m².${camSummary} Em đề xuất gói ${p.name} giá ${money(p.price)}/tháng, tốc độ ${p.speed}. ${p.mesh ? `Gói có ${p.mesh} thiết bị Mesh để mở rộng vùng phủ Wi‑Fi.` : "Gói không kèm Mesh."} ${coverageText} ${p.capacity ? `Theo tài liệu, nhóm này phù hợp khoảng ${p.capacity[0]}–${p.capacity[1]} thiết bị.` : "Tài liệu không nêu riêng số thiết bị chịu tải nên em không cam kết con số cụ thể."}${ipText}${feeText}${extra}`;
+        const areaPhrase = need.areaProvided
+          ? `diện tích khoảng ${need.perFloor} m²/sàn, ước tính tổng khoảng ${need.totalArea} m²`
+          : `khách chưa cung cấp m², hệ thống tạm ước tính theo kiểu nhà khoảng ${need.totalArea} m² tổng sử dụng`;
+        return `Anh/chị đang dùng cho nhu cầu ${useCaseText(c.useCaseInput || c.useCase).toLowerCase()}, tại ${houseText(c.house, c.houseInput).toLowerCase()}, ${areaPhrase}.${camSummary} Em đề xuất gói ${p.name} giá ${money(p.price)}/tháng, tốc độ ${p.speed}. ${p.mesh ? `Gói có ${p.mesh} thiết bị Mesh để mở rộng vùng phủ Wi‑Fi.` : "Gói không kèm Mesh."} ${coverageText} ${p.capacity ? `Theo tài liệu, nhóm này phù hợp khoảng ${p.capacity[0]}–${p.capacity[1]} thiết bị.` : "Tài liệu không nêu riêng số thiết bị chịu tải nên em không cam kết con số cụ thể."}${ipText}${feeText}${extra}`;
       }
 
       function renderSummary(c) {
@@ -2651,8 +2868,8 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
         document.getElementById("summary").innerHTML = `
   <div class="item"><div class="k">Nhu cầu sử dụng</div><div class="v">${useCaseText(c.useCaseInput || c.useCase)}</div></div>
   <div class="item"><div class="k">Kiểu nhà</div><div class="v">${houseText(c.house, c.houseInput)}</div></div>
-  <div class="item"><div class="k">Diện tích</div><div class="v">${c.areaM2} m²/sàn</div></div>
-  <div class="item"><div class="k">Ước tính tổng</div><div class="v">~${need.totalArea} m²</div></div>
+  <div class="item"><div class="k">Diện tích</div><div class="v">${need.areaProvided ? `${need.perFloor} m²/sàn` : "Chưa nhập"}</div></div>
+  <div class="item"><div class="k">Ước tính tổng</div><div class="v">~${need.totalArea} m²${need.areaProvided ? "" : " (ước tính theo kiểu nhà)"}</div></div>
   <div class="item"><div class="k">Thiết bị khác</div><div class="v">Khoảng ${c.devices}</div></div>
   <div class="item"><div class="k">Camera đang dùng</div><div class="v">${c.cameraInfo.totalCameras ? `${c.cameraInfo.wifiCams} Wi‑Fi/IP + ${c.cameraInfo.analogCams} Analog` : "Không có"}</div></div>
   <div class="item"><div class="k">Tải mạng quy đổi</div><div class="v">~${c.effectiveDevices} thiết bị</div></div>
@@ -2677,7 +2894,7 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
     <div class="ai-chip"><b>Ưu tiên:</b> ${profile.note}</div>
     <div class="ai-chip"><b>Không gian đã nhập:</b> ${houseText(c.house, c.houseInput)}</div>
     <div class="ai-chip"><b>Nhóm không gian nhận diện:</b> ${houseProfiles[c.house]?.label || houseProfiles.apartment.label}</div>
-    <div class="ai-chip"><b>Diện tích/sàn:</b> ${n.perFloor} m²</div>
+    <div class="ai-chip"><b>Diện tích/sàn:</b> ${n.areaProvided ? `${n.perFloor} m²` : `Chưa nhập – tạm ước tính ${n.perFloor} m²/sàn theo kiểu nhà`}</div>
     <div class="ai-chip"><b>Số tầng quy đổi:</b> ${n.floors}</div>
     <div class="ai-chip"><b>Tổng diện tích ước tính:</b> ${n.totalArea} m²</div>
     <div class="ai-chip"><b>Vùng phủ đề xuất:</b> ${n.zones}</div>
@@ -2739,14 +2956,15 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
           : "no";
         const houseInput = document.getElementById("houseType").value.trim();
         const house = resolveHouse(houseInput);
-        const areaM2 = Math.max(
-          15,
-          Math.min(1000, Number(document.getElementById("areaM2").value || 60)),
-        );
-        document.getElementById("areaM2").value = areaM2;
+        const areaInput = document.getElementById("areaM2").value.trim();
+        const areaM2 =
+          areaInput === ""
+            ? null
+            : Math.max(15, Math.min(1000, Number(areaInput) || 15));
+        if (areaInput !== "") document.getElementById("areaM2").value = areaM2;
         const devices = Math.max(
-          1,
-          Number(document.getElementById("devices").value || 1),
+          0,
+          Number(document.getElementById("devices").value || 0),
         );
         const hasExistingCamera =
           document.getElementById("existingCamera").value === "yes";
@@ -2795,6 +3013,26 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
           cloud,
           upgrade: customerType === "upgrade",
         };
+        const req = deriveMinimumRequirement(
+          house,
+          effectiveDevices,
+          areaM2,
+          useCase,
+          cameraInfo,
+          houseInput,
+          area,
+        );
+
+        // Sau khi bấm "Nhập lại", form có thể đang trống. Không tự đoán dữ liệu bắt buộc.
+        if (customerType !== "upgrade" && !area) {
+          document.getElementById("summary").innerHTML = "";
+          document.getElementById("notice").innerHTML =
+            '<div class="notice"><b>Chưa đủ thông tin:</b> hãy chọn khu vực của khách trước khi phân tích gói.</div>';
+          document.getElementById("results").innerHTML = "";
+          document.getElementById("tvAddonResults").innerHTML = "";
+          return;
+        }
+
         renderSummary(c);
         const notice = document.getElementById("notice");
         const results = document.getElementById("results");
@@ -2814,15 +3052,20 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
           const profile =
             useCaseProfiles[resolveUseCase(useCase)] || useCaseProfiles.family;
           let tier = profile.upgradeTier || "eco";
+          // Nhà rộng/nhiều tầng phải tăng tier, không chỉ nhìn mức cước thấp.
           if (
-            need.meshNeeded > 2 ||
-            effectiveDevices > 25 ||
+            need.totalArea > 140 ||
+            need.floors >= 3 ||
+            need.meshNeeded >= 2 ||
+            effectiveDevices > 20 ||
             tier === "plus" ||
             cameraInfo.wifiCams >= 4
           )
             tier = "plus";
           if (
-            need.meshNeeded > 3 ||
+            need.totalArea > 260 ||
+            need.floors >= 4 ||
+            need.meshNeeded >= 3 ||
             effectiveDevices > 30 ||
             house === "3-4" ||
             profile.upgradeTier === "vip" ||
@@ -2866,9 +3109,11 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
             );
           }
           // GIGA hiện trong bảng giá chỉ có khu vực nội thành HN/HCM.
+          // Nhà lớn/nhiều thiết bị cũng được đưa GIGA vào so sánh, kể cả khách gia đình.
           if (
             area === "H" &&
-            ["performance", "business"].includes(profile.segment)
+            (["performance", "business"].includes(profile.segment) ||
+              req.shouldShowGiga)
           ) {
             list = list.concat(gigaPackages);
           }
@@ -2884,21 +3129,39 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
         }
 
         list = list
-          .map((p) => ({
-            ...p,
-            _score:
-              scorePackage(
-                p,
-                house,
-                effectiveDevices,
-                areaM2,
-                useCase,
-                cameraInfo,
-                houseInput,
-              ) + ipPreferenceScore(p, ipNeed),
-          }))
-          .sort((a, b) => b._score - a._score || a.price - b.price);
-        const top = list.slice(0, 4);
+          .map((p) => {
+            const fit = packageFit(p, req);
+            return {
+              ...p,
+              _fit: fit,
+              _score:
+                scorePackage(
+                  p,
+                  house,
+                  effectiveDevices,
+                  areaM2,
+                  useCase,
+                  cameraInfo,
+                  houseInput,
+                  area,
+                ) + ipPreferenceScore(p, ipNeed),
+            };
+          })
+          .sort((a, b) => {
+            // 1. Gói đạt ngưỡng tối thiểu đứng trước.
+            if (a._fit.qualified !== b._fit.qualified)
+              return a._fit.qualified ? -1 : 1;
+            // 2. Nếu đều chưa đạt, gói thiếu ít hơn đứng trước.
+            if (a._fit.shortfall !== b._fit.shortfall)
+              return a._fit.shortfall - b._fit.shortfall;
+            // 3. Sau đó mới xét điểm phù hợp.
+            if (a._score !== b._score) return b._score - a._score;
+            // 4. Giá chỉ dùng khi mức phù hợp gần như ngang nhau.
+            return a.price - b.price;
+          });
+
+        const qualified = list.filter((p) => p._fit.qualified);
+        const top = (qualified.length ? qualified : list).slice(0, 4);
 
         let noticeHtml = "";
         const useProfile =
@@ -2941,9 +3204,12 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
             '<div class="notice">Đang dùng các combo Internet + TV360 có trong tài liệu. TV360 App phù hợp Smart TV; TV360 Box phù hợp khách muốn đầu thu riêng.</div>';
         }
         const need = estimateNetworkNeed(house, areaM2, houseInput);
-        let coverageWarn = "";
+        let coverageWarn = `<div class="notice"><b>Ngưỡng hệ thống đang dùng để chọn gói:</b> tối thiểu <b>${req.minSpeed} Mbps</b> và khoảng <b>${req.minMesh} Mesh</b> cho cấu hình khách này. Giá rẻ chỉ được dùng để phân hạng khi các gói đã đạt mức kỹ thuật tương đương.</div>`;
+        if (!list.some((p) => p._fit?.qualified)) {
+          coverageWarn += `<div class="notice ip-alert"><b>Không có gói nào trong dữ liệu đạt toàn bộ ngưỡng ước tính.</b> Hệ thống đang hiển thị các gói thiếu ít nhất để tham khảo; nên khảo sát thực tế/bổ sung Mesh hoặc chọn phương án cao hơn nếu có.</div>`;
+        }
         if (need.meshNeeded > 3) {
-          coverageWarn =
+          coverageWarn +=
             '<div class="notice"><b>Diện tích/kiểu nhà đang khá lớn.</b> Hệ thống ước tính cần khoảng ' +
             need.meshNeeded +
             " Mesh ngoài modem. Các gói khách mới trong dữ liệu hiện tối đa 3 Node Mesh, vì vậy nên khảo sát thực tế hoặc bổ sung Mesh nếu cần.</div>";
@@ -2962,7 +3228,50 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
       }
 
       function comparisonTable(pkgs) {
-        return `<div class="section-title"><h3>So sánh nhanh</h3></div><div class="compare"><table><thead><tr><th>Gói</th><th>Giá/tháng</th><th>Tốc độ</th><th>Mesh</th><th>Số thiết bị</th><th>Thiết bị/dịch vụ</th><th>IP tĩnh</th><th>Phí hòa mạng</th><th>Đánh giá vùng phủ</th></tr></thead><tbody>${pkgs.map((p) => `<tr><td><b>${p.name}</b></td><td>${money(p.price)}</td><td>${p.speed}</td><td>${p.mesh || 0}</td><td>${p.capacity ? p.capacity[0] + "–" + p.capacity[1] : "Không nêu"}</td><td>${p.equipment || p.range || "—"}</td><td>${p.ip || "Không"}</td><td>${p.setupFee != null ? money(p.setupFee) : "Chưa rõ"}</td><td>${(p.mesh || 0) >= estimateNetworkNeed(resolveHouse(document.getElementById("houseType").value), document.getElementById("areaM2").value, document.getElementById("houseType").value).meshNeeded ? "Đạt mức ước tính" : "Nên khảo sát / bổ sung Mesh"}</td></tr>`).join("")}</tbody></table></div>`;
+        return `<div class="section-title"><h3>So sánh nhanh</h3></div><div class="compare"><table><thead><tr><th>Gói</th><th>Giá/tháng</th><th>Tốc độ</th><th>Mesh</th><th>Số thiết bị</th><th>Thiết bị/dịch vụ</th><th>IP tĩnh</th><th>Phí hòa mạng</th><th>Đánh giá vùng phủ</th></tr></thead><tbody>${pkgs
+          .map(
+            (p) =>
+              `<tr><td><b>${p.name}</b></td><td>${money(p.price)}</td><td>${p.speed}</td><td>${p.mesh || 0}</td><td>${p.capacity ? p.capacity[0] + "–" + p.capacity[1] : "Không nêu"}</td><td>${p.equipment || p.range || "—"}</td><td>${p.ip || "Không"}</td><td>${p.setupFee != null ? money(p.setupFee) : "Chưa rõ"}</td><td>${(() => {
+                const houseRaw = document.getElementById("houseType").value;
+                const h = resolveHouse(houseRaw);
+                const m2 = document.getElementById("areaM2").value || null;
+                const use = document.getElementById("useCase").value;
+                const d =
+                  Math.max(
+                    0,
+                    Number(document.getElementById("devices").value || 0),
+                  ) +
+                  cameraLoadInfo(
+                    document.getElementById("existingCamera").value === "yes"
+                      ? document.getElementById("wifiCameraCount").value
+                      : 0,
+                    document.getElementById("existingCamera").value === "yes"
+                      ? document.getElementById("analogCameraCount").value
+                      : 0,
+                  ).networkLoad;
+                const ci = cameraLoadInfo(
+                  document.getElementById("existingCamera").value === "yes"
+                    ? document.getElementById("wifiCameraCount").value
+                    : 0,
+                  document.getElementById("existingCamera").value === "yes"
+                    ? document.getElementById("analogCameraCount").value
+                    : 0,
+                );
+                const r = deriveMinimumRequirement(
+                  h,
+                  d,
+                  m2,
+                  use,
+                  ci,
+                  houseRaw,
+                  document.getElementById("area").value,
+                );
+                return packageFit(p, r).qualified
+                  ? "Đạt ngưỡng đề xuất"
+                  : "Chưa đạt đủ tốc độ/vùng phủ";
+              })()}</td></tr>`,
+          )
+          .join("")}</tbody></table></div>`;
       }
 
       window.showScript = function (text, title = "Lời tư vấn") {
@@ -3076,32 +3385,76 @@ Lưu ý cho tư vấn viên: không nói phí hòa mạng là ‘miễn phí’ 
       });
       document.getElementById("recommendBtn").onclick = recommend;
       document.getElementById("resetBtn").onclick = () => {
+        // ===== RESET SẠCH TOÀN BỘ DỮ LIỆU NHẬP =====
         document.getElementById("customerType").value = "new";
-        document.getElementById("oldFeeWrap").style.display = "none";
-        document.getElementById("areaWrap").style.display = "block";
-        document.getElementById("extraWrap").style.display = "block";
-        document.getElementById("tvModeWrap").style.display = "none";
-        document.getElementById("cameraWrap").style.display = "block";
-        document.getElementById("cloudWrap").style.display = "none";
-        document.getElementById("useCase").value =
-          "Gia đình – sử dụng thông thường";
+
+        // Ô nhập tự do
+        document.getElementById("useCase").value = "";
+        document.getElementById("houseType").value = "";
+        document.getElementById("areaM2").value = "";
+        document.getElementById("devices").value = "";
+
+        // IP / khách nâng cấp
         document.getElementById("ipNeed").value = "no";
         document.getElementById("ipNeedWrap").style.display = "none";
-        document.getElementById("houseType").value = "Căn hộ 1 sàn / nhà nhỏ";
-        document.getElementById("areaM2").value = 60;
-        document.getElementById("devices").value = 12;
+        document.getElementById("oldFee").value = "all";
+        document.getElementById("oldFeeWrap").style.display = "none";
+
+        // Camera đang dùng
         document.getElementById("existingCamera").value = "no";
         document.getElementById("existingCameraDetail").style.display = "none";
         document.getElementById("wifiCameraCount").value = 0;
         document.getElementById("analogCameraCount").value = 0;
-        document.getElementById("area").value = "T";
+
+        // Khu vực + dịch vụ thêm
+        document.getElementById("area").value = "";
+        document.getElementById("areaWrap").style.display = "block";
+
         document.getElementById("tvNeed").value = "none";
         document.getElementById("tvMode").value = "separate";
+        document.getElementById("tvModeWrap").style.display = "none";
+        document.getElementById("extraWrap").style.display = "block";
+
         document.getElementById("cameraNeed").value = "none";
-        document.getElementById("newCameraCount").value = 1;
+        document.getElementById("cameraWrap").style.display = "block";
+        document.getElementById("newCameraCount").value = "";
         document.getElementById("newCameraCountWrap").style.display = "none";
-        recommend();
+        document.getElementById("cloudDays").value = "1";
+        document.getElementById("cloudWrap").style.display = "none";
+
+        // Xóa toàn bộ kết quả cũ để tránh nhầm sang khách mới
+        document.getElementById("summary").innerHTML = "";
+        document.getElementById("notice").innerHTML = "";
+        document.getElementById("results").innerHTML = "";
+        document.getElementById("tvAddonResults").innerHTML = "";
+
+        // Đóng popup lời tư vấn nếu đang mở
+        document.getElementById("scriptModal").classList.remove("show");
+        document.getElementById("modalText").textContent = "";
+        document.getElementById("modalTitle").textContent = "Lời tư vấn";
+
+        // Reset luôn khung chat AI
+        if (typeof aiChatMessages !== "undefined" && aiChatMessages) {
+          aiChatMessages.innerHTML = "";
+          aiAddMessage(
+            "bot",
+            `Dữ liệu khách hàng đã được xóa sạch ✅
+
+Bạn hãy nhập thông tin khách mới hoặc mô tả tự nhiên, ví dụ:
+“Nhà 3 tầng, 20 thiết bị, nội thành Hà Nội, có 4 camera Wi‑Fi”.`,
+          );
+        }
+        if (typeof aiChatInput !== "undefined" && aiChatInput)
+          aiChatInput.value = "";
+        if (typeof aiChatContext !== "undefined" && aiChatContext) {
+          aiChatContext.textContent =
+            "Chưa có dữ liệu khách hàng. Hãy nhập form hoặc mô tả khách trong chat.";
+        }
+
+        // Không tự chạy phân tích lại. Đợi người dùng nhập khách mới.
+        document.getElementById("useCase").focus();
       };
+
       updateIpNeedVisibility();
       recommend();
 
